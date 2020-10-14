@@ -1,24 +1,7 @@
-# hello-vue3
+# Online Code Editor
 
-## Project setup
-```
-npm install
-```
+A online code Editor like `CodePen`, built by Vue3.  
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+This is a pratice project.  
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## Status: ✏
