@@ -1,0 +1,33 @@
+/* reset default */
+body, p, h1, h2, h3, h4, h5, h6, div, ul, li, ol, dl, dd, dt,
+nav, main, title, aside, footer, section {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+ul, li {
+  list-style: none;
+}
+
+/* 浮动 */
+.clear {
+  zoom: 1;
+}
+.clear:after {
+  content: '';
+  clear: both;
+  display: table;
+}
+.fl {
+  float:left;
+}
+.fr {
+  float: right;
+}
+
+/* 溢出省略号 */
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
