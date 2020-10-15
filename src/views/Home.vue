@@ -2,21 +2,41 @@
   <div class="home">
     <div class="code-wrapper" v-resize:right="codeWrapperResizeOption" @resize="handleCodeWrapperResize" v-size-observer="sizeObserverOption" @sizechange="handleCodeWrapperSizeChange">
       <div class="editor-item html-wrapper" :class="{fold: foldArr[0]}">
-        <Editor v-model:editorValue="html.code" :mode="html.mode" :title="html.title" :isFold="foldArr[0]" @fold="handleFold(0, $event)"></Editor>
+        <Editor
+          v-model:editorValue="html.code"
+          :mode="html.mode"
+          :title="html.title"
+          :isFold="foldArr[0]"
+          @fold="handleFold(0, $event)"
+          @debounce-update="sendMessage"></Editor>
       </div>
       <div class="editor-item resize-item css-wrapper" :class="{fold: foldArr[1]}" v-resize="resizeOption" @resize="handleCSSWrapperResize">
-        <Editor v-model:editorValue="css.code" :mode="css.mode" :title="css.title" :isFold="foldArr[1]" @fold="handleFold(1, $event)"></Editor>
+        <Editor
+          v-model:editorValue="css.code"
+          :mode="css.mode"
+          :title="css.title"
+          :isFold="foldArr[1]"
+          @fold="handleFold(1, $event)"
+          @debounce-update="sendMessage"></Editor>
       </div>
       <div class="editor-item javascript-wrapper" :class="{fold: foldArr[2]}">
-        <Editor v-model:editorValue="javascript.code" :mode="javascript.mode" :title="javascript.title" :isFold="foldArr[2]" @fold="handleFold(2, $event)"></Editor>
+        <Editor
+          v-model:editorValue="javascript.code"
+          :mode="javascript.mode"
+          :title="javascript.title"
+          :isFold="foldArr[2]"
+          @fold="handleFold(2, $event)"
+          @debounce-update="sendMessage"></Editor>
       </div>
     </div>
-    <div class="iframe-wrapper"></div>
+    <div class="iframe-wrapper">
+      <iframe id="iframe" src="./iframe.html" frameborder="0" width="100%" height="100%"></iframe>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, toRaw } from 'vue'
 import Editor from '@/components/Editor.vue' // @ is an alias to /src
 export default defineComponent({
   name: 'Home',
@@ -41,8 +61,7 @@ export default defineComponent({
         code: ''
       },
       codeWrapperResizeOption: {
-        lineColor: '#fa4',
-        tipLineColor: '#fa4'
+        immediate: true
       },
       resizeOption: {
         direction: ['top', 'bottom'],
@@ -57,6 +76,20 @@ export default defineComponent({
     }
   },
   methods: {
+    sendMessage () {
+      const iframe = document.querySelector('#iframe') as HTMLIFrameElement
+      const target = iframe.contentWindow
+      const { html, css, javascript } = this
+      const data = {
+        type: 'editorChange',
+        data: {
+          html: toRaw(html),
+          css: toRaw(css),
+          javascript: toRaw(javascript)
+        }
+      }
+      if (target) target.postMessage(data, location.origin + '/iframe.html')
+    },
     handleCodeWrapperSizeChange (e) {
       const { contentRect } = e
       const { height } = contentRect
@@ -157,6 +190,11 @@ export default defineComponent({
         border-bottom: 2px solid #f9f9fa;
       }
     }
+  }
+  .iframe-wrapper {
+    width: 60%;
+    height: 100%;
+    position: relative;
   }
 }
 </style>

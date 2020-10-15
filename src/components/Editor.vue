@@ -61,8 +61,13 @@ export default {
       _CodeMirror.setOption('mode', props.mode)
       _CodeMirror.setOption('theme', 'material-palenight')
       _CodeMirror.setValue(props.editorValue)
+      let timer
       _CodeMirror.on('change', (coder) => {
-        context.emit('update:value', coder.getValue())
+        context.emit('update:editorValue', coder.getValue())
+        if (timer) clearTimeout(timer)
+        timer = setTimeout(() => {
+          context.emit('debounce-update')
+        }, 5000)
       })
     })
 

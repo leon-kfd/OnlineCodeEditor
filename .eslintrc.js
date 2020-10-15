@@ -23,6 +23,7 @@ module.exports = {
           'allowFirstLine': false
         }
       }
-    ]
+    ],
+    'no-eval': 'off'
   }
 }
