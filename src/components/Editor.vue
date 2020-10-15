@@ -73,7 +73,7 @@ export default {
     return {
       editor,
       handleToggleFold () {
-        context.emit('update:isFold', !props.isFold)
+        context.emit('fold', !props.isFold)
       }
     }
   }

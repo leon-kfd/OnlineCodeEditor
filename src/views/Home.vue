@@ -1,16 +1,17 @@
 <template>
   <div class="home">
-    <div class="code-wrapper" v-size-observer bind:sizechange="handleCodeWrapperSizeChange">
-      <div class="editor-item html-wrapper" :class="{fold: html.isFold}" v-size-observer>
-        <Editor v-model:editorValue="html.code" :mode="html.mode" :title="html.title" v-model:isFold="html.isFold"></Editor>
+    <div class="code-wrapper" v-resize:right="codeWrapperResizeOption" @resize="handleCodeWrapperResize" v-size-observer="sizeObserverOption" @sizechange="handleCodeWrapperSizeChange">
+      <div class="editor-item html-wrapper" :class="{fold: foldArr[0]}">
+        <Editor v-model:editorValue="html.code" :mode="html.mode" :title="html.title" :isFold="foldArr[0]" @fold="handleFold(0, $event)"></Editor>
       </div>
-      <div class="editor-item resize-item css-wrapper" :class="{fold: css.isFold}" v-resize="resizeOption" @resize="handleResize">
-        <Editor v-model:editorValue="css.code" :mode="css.mode" :title="css.title" v-model:isFold="css.isFold"></Editor>
+      <div class="editor-item resize-item css-wrapper" :class="{fold: foldArr[1]}" v-resize="resizeOption" @resize="handleCSSWrapperResize">
+        <Editor v-model:editorValue="css.code" :mode="css.mode" :title="css.title" :isFold="foldArr[1]" @fold="handleFold(1, $event)"></Editor>
       </div>
-      <div class="editor-item javascript-wrapper" :class="{fold: javascript.isFold}">
-        <Editor v-model:editorValue="javascript.code" :mode="javascript.mode" :title="javascript.title" v-model:isFold="javascript.isFold"></Editor>
+      <div class="editor-item javascript-wrapper" :class="{fold: foldArr[2]}">
+        <Editor v-model:editorValue="javascript.code" :mode="javascript.mode" :title="javascript.title" :isFold="foldArr[2]" @fold="handleFold(2, $event)"></Editor>
       </div>
     </div>
+    <div class="iframe-wrapper"></div>
   </div>
 </template>
 
@@ -39,61 +40,122 @@ export default defineComponent({
         mode: 'javascript',
         code: ''
       },
+      codeWrapperResizeOption: {
+        lineColor: '#fa4',
+        tipLineColor: '#fa4'
+      },
       resizeOption: {
         direction: ['top', 'bottom'],
         lineColor: '#fff',
         tipLineColor: '#fff'
-      }
+      },
+      sizeObserverOption: {
+        wait: 200
+      },
+      foldArr: [false, false, false],
+      codeWrapperHeight: 0
     }
   },
   methods: {
     handleCodeWrapperSizeChange (e) {
-      console.log(9999, e)
+      const { contentRect } = e
+      const { height } = contentRect
+      this.codeWrapperHeight = height
     },
-    getCodeWrapperHeight () {
-      const codeWrapperEl = document.querySelector('.code-wrapper') as HTMLElement
-      if (codeWrapperEl) {
-        return window.getComputedStyle(codeWrapperEl, 'height')
-      } else {
-        return 0
-      }
+    handleCodeWrapperResize (e) {
+      const { target, resizeWidthPercent, moveOffsetPercent } = e
+      this.setWidth(target, `${resizeWidthPercent}%`)
+      this.setWidth('.iframe-wrapper', `${100 - moveOffsetPercent}%`)
     },
-    handleResize (e) {
+    handleCSSWrapperResize (e) {
       const { target, direction, resizeHeightPercent, moveOffsetPercent } = e
       if (direction === 'top') {
-        target.style.height = `${resizeHeightPercent}%`
-        const htmlEl = document.querySelector('.html-wrapper') as HTMLElement
-        if (htmlEl) {
-          htmlEl.style.height = `${moveOffsetPercent}%`
-        }
+        this.setHeight(target, `${resizeHeightPercent}%`)
+        this.setHeight('.html-wrapper', `${moveOffsetPercent}%`)
       } else if (direction === 'bottom') {
-        target.style.height = `${resizeHeightPercent}%`
-        const htmlEl = document.querySelector('.javascript-wrapper') as HTMLElement
-        if (htmlEl) {
-          htmlEl.style.height = `${100 - moveOffsetPercent}%`
+        this.setHeight(target, `${resizeHeightPercent}%`)
+        this.setHeight('.javascript-wrapper', `${100 - moveOffsetPercent}%`)
+      }
+      this.checkFolding()
+    },
+    handleFold (index, fold) {
+      const classArr = ['.html-wrapper', '.css-wrapper', '.javascript-wrapper']
+      const isFoldLength = this.foldArr.filter(item => item).length
+      const minHeightPercent = 32 / this.codeWrapperHeight * 100
+      if (fold) {
+        if (isFoldLength >= 2) return
+        this.foldArr[index] = fold
+        let nextIndex
+        if (isFoldLength === 0) {
+          nextIndex = index < 2 ? index + 1 : 1
+        } else if (isFoldLength === 1) {
+          const foldIndex = this.foldArr.findIndex(item => item)
+          nextIndex = [0, 1, 2].filter(i => i !== index).filter(i => i !== foldIndex)[0]
         }
+        const offsetHeightPercent = this.getHeight(classArr[index]) / this.codeWrapperHeight * 100
+        const nextIndexHeightPercent = this.getHeight(classArr[nextIndex]) / this.codeWrapperHeight * 100
+        this.setHeight(classArr[index], `${minHeightPercent}%`)
+        this.setHeight(classArr[nextIndex], `${nextIndexHeightPercent + offsetHeightPercent - minHeightPercent}%`)
+      } else {
+        this.foldArr[index] = fold
+        if (isFoldLength === 1) {
+          classArr.map(i => this.setHeight(i, '33.3%'))
+        } else if (isFoldLength === 2) {
+          const unFoldIndex = this.foldArr.findIndex(item => !item)
+          const halfHeightPercent = (100 - minHeightPercent) / 2
+          this.setHeight(classArr[index], `${halfHeightPercent}%`)
+          this.setHeight(classArr[unFoldIndex], `${halfHeightPercent}%`)
+        }
+      }
+    },
+    checkFolding () {
+      const classArr = ['.html-wrapper', '.css-wrapper', '.javascript-wrapper']
+      classArr.map((item, index) => {
+        this.foldArr[index] = this.getHeight(item) < 33
+      })
+    },
+    setWidth (el, width) {
+      const targetEl = typeof el === 'string' ? document.querySelector(el) as HTMLElement : el
+      if (targetEl) targetEl.style.width = width
+    },
+    setHeight (el, height) {
+      const targetEl = typeof el === 'string' ? document.querySelector(el) as HTMLElement : el
+      if (targetEl) targetEl.style.height = height
+    },
+    getHeight (el) {
+      const targetEl = typeof el === 'string' ? document.querySelector(el) as HTMLElement : el
+      if (targetEl) {
+        const height = window.getComputedStyle(targetEl).height
+        return +height.replace('px', '')
+      } else {
+        return 0
       }
     }
   }
 })
 </script>
 <style lang="scss" scoped>
-.code-wrapper {
-  width: 100vw;
+.home {
+  width:100vw;
   height: 100vh;
-  overflow: hidden;
   display: flex;
-  flex-direction: column;
-  .editor-item {
-    width: 100%;
-    height: 33.3%;
-    min-height: 36px;
-    &.fold {
-      height: 36px;
-    }
-    &.resize-item {
-      border-top: 2px solid #f9f9fa;
-      border-bottom: 2px solid #f9f9fa;
+  flex-wrap: nowrap;
+  .code-wrapper {
+    width: 40%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    .editor-item {
+      width: 100%;
+      height: 33.3%;
+      min-height: 32px;
+      &.fold {
+        height: 36px;
+      }
+      &.resize-item {
+        border-top: 2px solid #f9f9fa;
+        border-bottom: 2px solid #f9f9fa;
+      }
     }
   }
 }
