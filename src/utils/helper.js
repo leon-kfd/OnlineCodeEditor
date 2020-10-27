@@ -46,7 +46,6 @@ export function debounce (fn, delay = 1000) {
   return function () {
     var context = this
     var args = arguments
-    console.log(6666, timer)
     clearTimeout(timer)
     timer = setTimeout(function () {
       fn.apply(context, args)

@@ -14,6 +14,7 @@ window.addEventListener('message', (event) => {
   try {
     const { type, data: codeValue } = data
     if (type !== 'editorChange') return
+    console.log(codeValue)
     const { html, css, javascript } = codeValue
     const customCSS = document.querySelector('#customCSS')
     if (customCSS) customCSS.innerHTML = css.code

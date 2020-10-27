@@ -22,8 +22,10 @@ import 'codemirror/mode/javascript/javascript.js'
 import 'codemirror/mode/htmlmixed/htmlmixed.js'
 import 'codemirror/mode/css/css.js'
 import 'codemirror/mode/sass/sass.js'
-import 'codemirror/theme/material-palenight.css'
-export type modeType = 'javascript' | 'html' | 'css'
+import 'codemirror/theme/material-darker.css'
+import expand from 'emmet'
+import { debounce } from '@/utils/helper'
+export type modeType = 'javascript' | 'htmlmixed' | 'css'
 export default {
   name: 'Editor',
   props: {
@@ -54,21 +56,84 @@ export default {
     }
   },
   setup (props, context) {
+    function getWord (line, ch) {
+      function getNearTagChar (str) {
+        let i
+        for (i = str.length - 1; i > 0; i--) {
+          if (str[i] === '>' || str[i] === '<') {
+            break
+          }
+        }
+        return str[i] || '<'
+      }
+      // 光标位于行末或单词末尾
+      if (ch === line.length || (line.length > ch + 1 && (/\s/.test(line[ch]) || line[ch] === '<'))) {
+        let i
+        for (i = ch - 1; i >= 0; i--) {
+          if (/\s/.test(line[i]) || (line[i] === '>' && getNearTagChar(line.slice(0, i)) === '<')) {
+            break
+          }
+        }
+        i = i + 1
+        return [line.slice(i, ch), i]
+      }
+      return ['', 0]
+    }
+
     let _CodeMirror: CodeMirror.EditorFromTextArea
     const editor = ref(document.createElement('textarea'))
     onMounted(async () => {
+      let word, wordIndex
       _CodeMirror = CodeMirror.fromTextArea(editor.value, props.options)
       _CodeMirror.setOption('mode', props.mode)
-      _CodeMirror.setOption('theme', 'material-palenight')
+      _CodeMirror.setOption('theme', 'material-darker')
       _CodeMirror.setValue(props.editorValue)
-      let timer
       _CodeMirror.on('change', (coder) => {
+        if (props.mode === 'htmlmixed') {
+          const { line: lineIndex, ch } = coder.getCursor()
+          const line = coder.getLine(lineIndex)
+          const wordResult = getWord(line, ch)
+          word = wordResult[0]
+          wordIndex = wordResult[1]
+        }
         context.emit('update:editorValue', coder.getValue())
-        if (timer) clearTimeout(timer)
-        timer = setTimeout(() => {
-          context.emit('debounce-update')
-        }, 5000)
       })
+      _CodeMirror.on('change', debounce(() => {
+        context.emit('debounce-update')
+      }, 5000) as (instance: CodeMirror.Editor) => void)
+
+      if (props.mode === 'htmlmixed') {
+        _CodeMirror.setOption('extraKeys', {
+          Tab: function (coder) {
+            const indent = coder.getOption('indentUnit') || 2
+            const spaces = Array(indent + 1).join(' ')
+            if (!word) {
+              coder.replaceSelection(spaces)
+            } else {
+              let emmet
+              try {
+                emmet = expand(word)
+              } catch (e) {
+                console.error(e)
+              }
+              if (emmet) {
+                const { line, ch } = coder.getCursor()
+                coder.setSelection({ line, ch }, { line, ch: wordIndex })
+                const formatterEmmet = emmet.split('\n').map((line, index) => {
+                  if (index > 0) {
+                    line = line.replace(/\t/g, spaces)
+                    line = Array(wordIndex + 1).join(' ') + line
+                  }
+                  return line
+                }).join('\n')
+                coder.replaceSelection(formatterEmmet)
+              } else {
+                coder.replaceSelection(spaces)
+              }
+            }
+          }
+        })
+      }
     })
 
     watch(() => props.mode, (val) => {
@@ -86,7 +151,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-$bgColor: #292D3E;
+$bgColor: #212121;
 .wrapper {
   width: 100%;
   height: 100%;

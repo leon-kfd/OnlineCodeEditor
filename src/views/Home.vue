@@ -173,6 +173,7 @@ export default defineComponent({
   height: 100vh;
   display: flex;
   flex-wrap: nowrap;
+  overflow: hidden;
   .code-wrapper {
     width: 40%;
     height: 100%;
