@@ -26,6 +26,27 @@ import 'codemirror/theme/material-darker.css'
 import expand from 'emmet'
 import { debounce } from '@/utils/helper'
 export type modeType = 'javascript' | 'htmlmixed' | 'css'
+
+function getWord (line: string, ch: number): [string, number] {
+  const getNearTagChar = (str: string): string => {
+    for (let i = str.length - 1; i > 0; i--) {
+      if (str[i] === '>' || str[i] === '<') return str[i]
+    }
+    return str[0] || '<'
+  }
+  // 光标位于行末或单词末尾
+  if (ch === line.length || (line.length > ch + 1 && (/\s/.test(line[ch]) || line[ch] === '<'))) {
+    let i
+    for (i = ch - 1; i >= 0; i--) {
+      if (/\s/.test(line[i]) || (line[i] === '>' && getNearTagChar(line.slice(0, i)) === '<')) {
+        break
+      }
+    }
+    return [line.slice(i + 1, ch), i + 1]
+  }
+  return ['', 0]
+}
+
 export default {
   name: 'Editor',
   props: {
@@ -56,40 +77,18 @@ export default {
     }
   },
   setup (props, context) {
-    function getWord (line, ch) {
-      function getNearTagChar (str) {
-        let i
-        for (i = str.length - 1; i > 0; i--) {
-          if (str[i] === '>' || str[i] === '<') {
-            break
-          }
-        }
-        return str[i] || '<'
-      }
-      // 光标位于行末或单词末尾
-      if (ch === line.length || (line.length > ch + 1 && (/\s/.test(line[ch]) || line[ch] === '<'))) {
-        let i
-        for (i = ch - 1; i >= 0; i--) {
-          if (/\s/.test(line[i]) || (line[i] === '>' && getNearTagChar(line.slice(0, i)) === '<')) {
-            break
-          }
-        }
-        i = i + 1
-        return [line.slice(i, ch), i]
-      }
-      return ['', 0]
-    }
-
-    let _CodeMirror: CodeMirror.EditorFromTextArea
+    let cmInstance: CodeMirror.EditorFromTextArea
     const editor = ref(document.createElement('textarea'))
+
     onMounted(async () => {
-      let word, wordIndex
-      _CodeMirror = CodeMirror.fromTextArea(editor.value, props.options)
-      _CodeMirror.setOption('mode', props.mode)
-      _CodeMirror.setOption('theme', 'material-darker')
-      _CodeMirror.setValue(props.editorValue)
-      _CodeMirror.on('change', (coder) => {
+      let word: string, wordIndex: number
+      cmInstance = CodeMirror.fromTextArea(editor.value, props.options)
+      cmInstance.setOption('mode', props.mode)
+      cmInstance.setOption('theme', 'material-darker')
+      cmInstance.setValue(props.editorValue)
+      cmInstance.on('change', (coder) => {
         if (props.mode === 'htmlmixed') {
+          // HTML模式下使用Emmet
           const { line: lineIndex, ch } = coder.getCursor()
           const line = coder.getLine(lineIndex)
           const wordResult = getWord(line, ch)
@@ -98,25 +97,20 @@ export default {
         }
         context.emit('update:editorValue', coder.getValue())
       })
-      _CodeMirror.on('change', debounce(() => {
+      cmInstance.on('change', debounce(() => {
         context.emit('debounce-update')
       }, 5000) as (instance: CodeMirror.Editor) => void)
 
       if (props.mode === 'htmlmixed') {
-        _CodeMirror.setOption('extraKeys', {
+        cmInstance.setOption('extraKeys', {
           Tab: function (coder) {
             const indent = coder.getOption('indentUnit') || 2
             const spaces = Array(indent + 1).join(' ')
             if (!word) {
               coder.replaceSelection(spaces)
             } else {
-              let emmet
               try {
-                emmet = expand(word)
-              } catch (e) {
-                console.error(e)
-              }
-              if (emmet) {
+                const emmet = expand(word)
                 const { line, ch } = coder.getCursor()
                 coder.setSelection({ line, ch }, { line, ch: wordIndex })
                 const formatterEmmet = emmet.split('\n').map((line, index) => {
@@ -127,7 +121,8 @@ export default {
                   return line
                 }).join('\n')
                 coder.replaceSelection(formatterEmmet)
-              } else {
+              } catch (e) {
+                console.error(e)
                 coder.replaceSelection(spaces)
               }
             }
@@ -137,13 +132,16 @@ export default {
     })
 
     watch(() => props.mode, (val) => {
-      _CodeMirror.setOption('mode', val)
+      cmInstance.setOption('mode', val)
     })
 
     return {
       editor,
       handleToggleFold () {
         context.emit('fold', !props.isFold)
+      },
+      handleCodeMirrorRefresh () {
+        cmInstance.refresh()
       }
     }
   }
@@ -165,16 +163,16 @@ $bgColor: #212121;
     height: 32px;
     padding: 0 20px;
     .title {
-      height: 32px;
-      line-height: 32px;
+      height: 28px;
+      line-height: 28px;
       color: #f9f9fa;
-      font-size: 22px;
+      font-size: 18px;
       font-weight: bold;
       width: 100%;
       flex: 1;
     }
     .fold {
-      font-size: 30px;
+      font-size: 24px;
       color: #fff;
       cursor: pointer;
       display: flex;
@@ -196,5 +194,7 @@ $bgColor: #212121;
 <style>
 .textarea-wrapper .CodeMirror {
   height: 100%;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 14px;
 }
 </style>
