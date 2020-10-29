@@ -15,16 +15,18 @@
 </template>
 
 <script lang="ts">
-import CodeMirror from 'codemirror'
-import 'codemirror/lib/codemirror.css'
 import { onMounted, ref, PropType, watch } from 'vue'
-import 'codemirror/mode/javascript/javascript.js'
-import 'codemirror/mode/htmlmixed/htmlmixed.js'
-import 'codemirror/mode/css/css.js'
-import 'codemirror/mode/sass/sass.js'
-import 'codemirror/theme/material-darker.css'
 import expand from 'emmet'
 import { debounce } from '@/utils/helper'
+import CodeMirror from 'codemirror'
+if (process.env.NODE_ENV !== 'production') {
+  require('codemirror/lib/codemirror.css')
+  require('codemirror/theme/material-darker.css')
+  require('codemirror/mode/javascript/javascript.js')
+  require('codemirror/mode/htmlmixed/htmlmixed.js')
+  require('codemirror/mode/css/css.js')
+  require('codemirror/mode/sass/sass.js')
+}
 export type modeType = 'javascript' | 'htmlmixed' | 'css'
 
 function getWord (line: string, ch: number): [string, number] {
