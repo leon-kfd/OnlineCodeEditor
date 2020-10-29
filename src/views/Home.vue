@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <Header></Header>
+    <Header @open-setting="handleOpenSetting"></Header>
     <main>
       <div class="code-wrapper" v-resize:right="codeWrapperResizeOption" @resize="handleCodeWrapperResize" v-size-observer="sizeObserverOption" @sizechange="handleCodeWrapperSizeChange">
         <div class="editor-item html-wrapper" :class="{fold: foldArr[0]}">
@@ -38,43 +38,52 @@
         <iframe id="iframe" src="./iframe.html" frameborder="0" width="100%" height="100%"></iframe>
       </div>
     </main>
+    <Footer></Footer>
+    <Setting ref="setting"></Setting>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, toRaw, ref, reactive } from 'vue'
 import Header from '@/components/Header.vue'
+import Footer from '@/components/Footer.vue'
 import Editor from '@/components/Editor.vue'
+import Setting from '@/components/Setting.vue'
 import { setWidth, setHeight, getHeight } from '@/utils/dom'
 // import { scss2css } from '@/utils/helper'
 export default defineComponent({
   name: 'Home',
   components: {
     Header,
-    Editor
+    Footer,
+    Editor,
+    Setting
   },
   setup () {
     const htmlCM = ref()
     const cssCM = ref()
     const javascriptCM = ref()
+    const setting = ref()
 
-    const state = reactive({
-      html: {
+    const state = {
+      html: reactive({
         title: 'HTML',
         mode: 'htmlmixed',
         code: ''
-      },
-      css: {
+      }),
+      css: reactive({
         title: 'CSS',
         mode: 'css',
         code: ''
-      },
-      javascript: {
+      }),
+      javascript: reactive({
         title: 'Javascript',
         mode: 'javascript',
         code: ''
-      },
+      }),
       codeWrapperResizeOption: {
+        lineWidth: 4,
+        lineColor: '#b99944',
         immediate: true
       },
       resizeOption: {
@@ -86,9 +95,9 @@ export default defineComponent({
       sizeObserverOption: {
         wait: 200
       },
-      foldArr: [false, false, false],
+      foldArr: reactive([false, false, false]),
       codeWrapperHeight: 0
-    })
+    }
 
     const methods = {
       async sendMessage () {
@@ -168,6 +177,9 @@ export default defineComponent({
         htmlCM.value.handleCodeMirrorRefresh()
         cssCM.value.handleCodeMirrorRefresh()
         javascriptCM.value.handleCodeMirrorRefresh()
+      },
+      handleOpenSetting () {
+        setting.value.open()
       }
     }
 
@@ -176,7 +188,8 @@ export default defineComponent({
       ...methods,
       htmlCM,
       cssCM,
-      javascriptCM
+      javascriptCM,
+      setting
     }
   }
 })

@@ -87,7 +87,7 @@ export default {
       cmInstance.setOption('theme', 'material-darker')
       cmInstance.setValue(props.editorValue)
       cmInstance.on('change', (coder) => {
-        if (props.mode === 'htmlmixed') {
+        if (props.mode === 'htmlmixed' || props.mode === 'css') {
           // HTML模式下使用Emmet
           const { line: lineIndex, ch } = coder.getCursor()
           const line = coder.getLine(lineIndex)
@@ -101,7 +101,7 @@ export default {
         context.emit('debounce-update')
       }, 5000) as (instance: CodeMirror.Editor) => void)
 
-      if (props.mode === 'htmlmixed') {
+      if (props.mode === 'htmlmixed' || props.mode === 'css') {
         cmInstance.setOption('extraKeys', {
           Tab: function (coder) {
             const indent = coder.getOption('indentUnit') || 2
@@ -110,7 +110,11 @@ export default {
               coder.replaceSelection(spaces)
             } else {
               try {
-                const emmet = expand(word)
+                const typeMap = {
+                  htmlmixed: 'markup',
+                  css: 'stylesheet'
+                }
+                const emmet = expand(word, { type: typeMap[props.mode] })
                 const { line, ch } = coder.getCursor()
                 coder.setSelection({ line, ch }, { line, ch: wordIndex })
                 const formatterEmmet = emmet.split('\n').map((line, index) => {

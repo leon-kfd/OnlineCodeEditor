@@ -47,3 +47,22 @@ ul, li {
   background: #bbb;
   background-clip: padding-box;
 }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  cursor: pointer;
+  color: #606266;
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  border: none;
+  transition: .1s;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  font-size: 14px;
+  border-radius: 4px;
+}
