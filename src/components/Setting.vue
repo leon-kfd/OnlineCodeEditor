@@ -7,29 +7,89 @@
           <div class="item" :class="{active: index === activeTab}" v-for="(item,index) in tabs" :key="item" @click="handleSetTabActive(index)">{{item}}</div>
         </div>
         <div class="tabs-content">
-          <div class="html-setting" v-if="activeTab === 0">// Html Setting</div>
-          <div class="css-setting" v-if="activeTab === 1">// Css Setting</div>
-          <div class="javascript-setting" v-if="activeTab === 2">// Javascript Setting</div>
+          <div class="html-setting" v-if="activeTab === 0">
+            <!-- // Html Setting -->
+            <div class="form-item">
+              <div class="label">Stuff to &lt;head&gt;</div>
+              <div class="form-content">
+                <textarea v-model="setting.headStuff" cols="30" rows="6" placeholder="e.g. <meta>, <link>, <script>"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="css-setting" v-if="activeTab === 1">
+            <!-- // CSS Setting -->
+            <div class="form-item">
+              <div class="label">CSS Preprocessor</div>
+              <div class="content">
+                <select v-model="setting.cssPreprocessor">
+                  <option value="css">None</option>
+                  <option value="scss">SCSS</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-item">
+              <div class="label">CSS CDN</div>
+              <div class="form-content">
+                <div class="input-list-item" v-for="(item,index) in setting.cssCDN" :key="index">
+                  <input type="text" v-model="item.address" placeholder="Enter CDN address">
+                  <div class="delete-btn" @click="handleRemoveCssCDN(index)">
+                    <svg viewBox="0 0 1024 1024" width="20" height="20">
+                      <path d="M793.6 102.4l-179.2 0 0-25.6c0-42.3424-34.4576-76.8-76.8-76.8l-102.4 0c-42.3424 0-76.8 34.4576-76.8 76.8l0 25.6-179.2 0c-42.3424 0-76.8 34.4576-76.8 76.8l0 51.2c0 33.3824 21.4016 61.8496 51.2 72.3968l0 644.4032c0 42.3424 34.4576 76.8 76.8 76.8l512 0c42.3424 0 76.8-34.4576 76.8-76.8l0-644.4032c29.7984-10.5472 51.2-39.0144 51.2-72.3968l0-51.2c0-42.3424-34.4576-76.8-76.8-76.8zM409.6 76.8c0-14.1312 11.4688-25.6 25.6-25.6l102.4 0c14.1312 0 25.6 11.4688 25.6 25.6l0 25.6-153.6 0 0-25.6zM742.4 972.8l-512 0c-14.1312 0-25.6-11.4688-25.6-25.6l0-640 563.2 0 0 640c0 14.1312-11.4688 25.6-25.6 25.6zM819.2 230.4c0 14.1312-11.4688 25.6-25.6 25.6l-614.4 0c-14.1312 0-25.6-11.4688-25.6-25.6l0-51.2c0-14.1312 11.4688-25.6 25.6-25.6l614.4 0c14.1312 0 25.6 11.4688 25.6 25.6l0 51.2z" fill="currentColor"></path>
+                      <path d="M640 358.4c-14.1312 0-25.6 11.4688-25.6 25.6l0 512c0 14.1312 11.4688 25.6 25.6 25.6s25.6-11.4688 25.6-25.6l0-512c0-14.1312-11.4688-25.6-25.6-25.6z" fill="currentColor"></path>
+                      <path d="M486.4 358.4c-14.1312 0-25.6 11.4688-25.6 25.6l0 512c0 14.1312 11.4688 25.6 25.6 25.6s25.6-11.4688 25.6-25.6l0-512c0-14.1312-11.4688-25.6-25.6-25.6z" fill="currentColor"></path>
+                      <path d="M332.8 358.4c-14.1312 0-25.6 11.4688-25.6 25.6l0 512c0 14.1312 11.4688 25.6 25.6 25.6s25.6-11.4688 25.6-25.6l0-512c0-14.1312-11.4688-25.6-25.6-25.6z" fill="currentColor"></path></svg>
+                  </div>
+                </div>
+                <div class="input-list-item" @click="handleAddCssCDN">
+                  <button class="btn btn-new">Add new one</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="javascript-setting" v-if="activeTab === 2">
+            <div class="form-item">
+              <div class="label">Javascript CDN</div>
+              <div class="form-content">
+                <div class="input-list-item" v-for="(item,index) in setting.jsCDN" :key="index">
+                  <input type="text" v-model="item.address" placeholder="Enter CDN address">
+                  <div class="delete-btn" @click="handleRemoveJsCDN(index)">
+                    <svg viewBox="0 0 1024 1024" width="20" height="20">
+                      <path d="M793.6 102.4l-179.2 0 0-25.6c0-42.3424-34.4576-76.8-76.8-76.8l-102.4 0c-42.3424 0-76.8 34.4576-76.8 76.8l0 25.6-179.2 0c-42.3424 0-76.8 34.4576-76.8 76.8l0 51.2c0 33.3824 21.4016 61.8496 51.2 72.3968l0 644.4032c0 42.3424 34.4576 76.8 76.8 76.8l512 0c42.3424 0 76.8-34.4576 76.8-76.8l0-644.4032c29.7984-10.5472 51.2-39.0144 51.2-72.3968l0-51.2c0-42.3424-34.4576-76.8-76.8-76.8zM409.6 76.8c0-14.1312 11.4688-25.6 25.6-25.6l102.4 0c14.1312 0 25.6 11.4688 25.6 25.6l0 25.6-153.6 0 0-25.6zM742.4 972.8l-512 0c-14.1312 0-25.6-11.4688-25.6-25.6l0-640 563.2 0 0 640c0 14.1312-11.4688 25.6-25.6 25.6zM819.2 230.4c0 14.1312-11.4688 25.6-25.6 25.6l-614.4 0c-14.1312 0-25.6-11.4688-25.6-25.6l0-51.2c0-14.1312 11.4688-25.6 25.6-25.6l614.4 0c14.1312 0 25.6 11.4688 25.6 25.6l0 51.2z" fill="currentColor"></path>
+                      <path d="M640 358.4c-14.1312 0-25.6 11.4688-25.6 25.6l0 512c0 14.1312 11.4688 25.6 25.6 25.6s25.6-11.4688 25.6-25.6l0-512c0-14.1312-11.4688-25.6-25.6-25.6z" fill="currentColor"></path>
+                      <path d="M486.4 358.4c-14.1312 0-25.6 11.4688-25.6 25.6l0 512c0 14.1312 11.4688 25.6 25.6 25.6s25.6-11.4688 25.6-25.6l0-512c0-14.1312-11.4688-25.6-25.6-25.6z" fill="currentColor"></path>
+                      <path d="M332.8 358.4c-14.1312 0-25.6 11.4688-25.6 25.6l0 512c0 14.1312 11.4688 25.6 25.6 25.6s25.6-11.4688 25.6-25.6l0-512c0-14.1312-11.4688-25.6-25.6-25.6z" fill="currentColor"></path></svg>
+                  </div>
+                </div>
+                <div class="input-list-item">
+                  <button class="btn btn-new" @click="handleAddJsCDN">Add new one</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </AnimationDialog>
 </template>
 
-<script>
+<script lang="ts">
 import AnimationDialog from 'howdyjs/packages/animation-dialog'
-// import AnimationDialog from 'howdyjs/lib/animation-dialog'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useStore } from 'vuex'
+import { SettingType } from './Setting'
+
 export default {
   components: {
     AnimationDialog
   },
   setup () {
+    const store = useStore()
     const dialog = ref()
     const state = {
       tabs: ['Html', 'CSS', 'Javascript'],
       activeTab: ref(0)
     }
+    const setting: SettingType = store.state.setting
     const methods = {
       handleSetTabActive (index) {
         state.activeTab.value = index
@@ -39,11 +99,33 @@ export default {
       },
       close () {
         dialog.value.close()
+      },
+      handleRemoveCssCDN (index) {
+        if (setting.cssCDN.length > 1) {
+          setting.cssCDN.splice(index, 1)
+        }
+      },
+      handleAddCssCDN () {
+        setting.cssCDN = [...setting.cssCDN, { address: '' }]
+      },
+      handleRemoveJsCDN (index) {
+        if (setting.jsCDN.length > 1) {
+          setting.jsCDN.splice(index, 1)
+        }
+      },
+      handleAddJsCDN () {
+        setting.jsCDN = [...setting.jsCDN, { address: '' }]
       }
     }
+
+    watch(setting, (val) => {
+      store.commit('updateSetting', val)
+    })
+
     return {
       ...state,
       ...methods,
+      setting,
       dialog
     }
   }
@@ -78,6 +160,7 @@ export default {
       margin-bottom: 10px;
       position: relative;
       cursor: pointer;
+      user-select: none;
       &.active {
         font-weight: bold;
         &:after {
@@ -95,6 +178,66 @@ export default {
   .tabs-content {
     width: 100%;
     flex: 1;
+  }
+}
+.form-item {
+  margin-bottom: 20px;
+  .form-content {
+    padding: 10px 0;
+  }
+  .operation-label {
+    display: flex;
+    align-items: center;
+    .label {
+      width: 100%;
+      flex: 1;
+      margin-right: 20px;
+    }
+  }
+  textarea, input, select {
+    padding: 5px;
+    font-family: 'Courier New', Courier, monospace, "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+    background: rgb(209, 209, 209);
+    color: #464646;
+    border-radius: 4px;
+  }
+  .input-list-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    input {
+      width: 100%;
+      flex: 1;
+      font-size: 16px;
+    }
+    .delete-btn {
+      padding: 0 10px;
+      cursor: pointer;
+      svg {
+        color: rgb(226, 126, 126);
+      }
+      &:hover {
+        svg {
+          color: rgb(245, 170, 170);
+        }
+      }
+    }
+    .btn-new {
+      height: 30px;
+      padding: 0 12px;
+      font-weight: bold;
+      background: #d4d4d8;
+    }
+  }
+  textarea {
+    width: 100%;
+    resize: none;
+  }
+  select {
+    width: 100%;
+    font-weight: bold;
+    font-size: 18px;
   }
 }
 </style>

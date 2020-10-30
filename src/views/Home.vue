@@ -112,7 +112,9 @@ export default defineComponent({
             javascript: toRaw(javascript)
           }
         }
-        if (target) target.postMessage(data, location.origin + '/iframe.html')
+        if (target) {
+          target.postMessage(data, location.origin + '/iframe.html')
+        }
       },
       handleCodeWrapperSizeChange (e) {
         const { contentRect } = e

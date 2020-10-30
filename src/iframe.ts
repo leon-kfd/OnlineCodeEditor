@@ -1,6 +1,3 @@
-// import { createApp } from 'vue'
-// import App from './Iframe.vue'
-// createApp(App).mount('#app')
 function loadScript (code) {
   const _script = document.querySelector('#customJS')
   if (_script) document.body.removeChild(_script)
@@ -14,7 +11,6 @@ window.addEventListener('message', (event) => {
   try {
     const { type, data: codeValue } = data
     if (type !== 'editorChange') return
-    console.log(codeValue)
     const { html, css, javascript } = codeValue
     const customCSS = document.querySelector('#customCSS')
     if (customCSS) customCSS.innerHTML = css.code
