@@ -38,8 +38,8 @@
         <iframe id="iframe" src="./iframe.html" frameborder="0" width="100%" height="100%"></iframe>
       </div>
     </main>
-    <Footer></Footer>
-    <Setting ref="setting"></Setting>
+    <Footer @click="updateA"></Footer>
+    <Setting ref="settingEl"></Setting>
   </div>
 </template>
 
@@ -63,7 +63,7 @@ export default defineComponent({
     const htmlCM = ref()
     const cssCM = ref()
     const javascriptCM = ref()
-    const setting = ref()
+    const settingEl = ref()
 
     const state = {
       html: reactive({
@@ -180,8 +180,8 @@ export default defineComponent({
         cssCM.value.handleCodeMirrorRefresh()
         javascriptCM.value.handleCodeMirrorRefresh()
       },
-      handleOpenSetting () {
-        setting.value.open()
+      async handleOpenSetting () {
+        settingEl.value.open()
       }
     }
 
@@ -191,7 +191,7 @@ export default defineComponent({
       htmlCM,
       cssCM,
       javascriptCM,
-      setting
+      settingEl
     }
   }
 })

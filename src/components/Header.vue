@@ -7,7 +7,7 @@
   </header>
 </template>
 
-<script>
+<script lang="ts">
 export default {
   setup (props, { emit }) {
     return {

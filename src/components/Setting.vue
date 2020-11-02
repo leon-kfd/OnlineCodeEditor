@@ -12,7 +12,7 @@
             <div class="form-item">
               <div class="label">Stuff to &lt;head&gt;</div>
               <div class="form-content">
-                <textarea v-model="setting.headStuff" cols="30" rows="6" placeholder="e.g. <meta>, <link>, <script>"></textarea>
+                <textarea v-model="headStuff" cols="30" rows="6" placeholder="e.g. <meta>, <link>, <script>"></textarea>
               </div>
             </div>
           </div>
@@ -21,7 +21,7 @@
             <div class="form-item">
               <div class="label">CSS Preprocessor</div>
               <div class="content">
-                <select v-model="setting.cssPreprocessor">
+                <select v-model="cssPreprocessor">
                   <option value="css">None</option>
                   <option value="scss">SCSS</option>
                 </select>
@@ -30,7 +30,7 @@
             <div class="form-item">
               <div class="label">CSS CDN</div>
               <div class="form-content">
-                <div class="input-list-item" v-for="(item,index) in setting.cssCDN" :key="index">
+                <div class="input-list-item" v-for="(item,index) in cssCDN" :key="index">
                   <input type="text" v-model="item.address" placeholder="Enter CDN address">
                   <div class="delete-btn" @click="handleRemoveCssCDN(index)">
                     <svg viewBox="0 0 1024 1024" width="20" height="20">
@@ -50,7 +50,7 @@
             <div class="form-item">
               <div class="label">Javascript CDN</div>
               <div class="form-content">
-                <div class="input-list-item" v-for="(item,index) in setting.jsCDN" :key="index">
+                <div class="input-list-item" v-for="(item,index) in jsCDN" :key="index">
                   <input type="text" v-model="item.address" placeholder="Enter CDN address">
                   <div class="delete-btn" @click="handleRemoveJsCDN(index)">
                     <svg viewBox="0 0 1024 1024" width="20" height="20">
@@ -74,22 +74,38 @@
 
 <script lang="ts">
 import AnimationDialog from 'howdyjs/packages/animation-dialog'
-import { ref, watch } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import { SettingType } from './Setting'
 
-export default {
+export default defineComponent({
   components: {
     AnimationDialog
   },
   setup () {
     const store = useStore()
+    const setting: SettingType = store.state.setting
     const dialog = ref()
     const state = {
       tabs: ['Html', 'CSS', 'Javascript'],
-      activeTab: ref(0)
+      activeTab: ref(0),
+      headStuff: computed({
+        get: () => setting.headStuff,
+        set: (val) => store.commit('setting/updateHeadStuff', val)
+      }),
+      cssPreprocessor: computed({
+        get: () => setting.cssPreprocessor,
+        set: (val) => store.commit('setting/cssPreprocessor', val)
+      }),
+      cssCDN: computed({
+        get: () => setting.cssCDN,
+        set: (val) => store.commit('setting/cssCDN', val)
+      }),
+      jsCDN: computed({
+        get: () => setting.jsCDN,
+        set: (val) => store.commit('setting/jsCDN', val)
+      })
     }
-    const setting: SettingType = store.state.setting
     const methods = {
       handleSetTabActive (index) {
         state.activeTab.value = index
@@ -101,26 +117,34 @@ export default {
         dialog.value.close()
       },
       handleRemoveCssCDN (index) {
-        if (setting.cssCDN.length > 1) {
-          setting.cssCDN.splice(index, 1)
+        const value = state.cssCDN.value
+        if (value.length > 1) {
+          value.splice(index, 1)
+          store.commit('setting/updateCssCDN', value)
         }
       },
       handleAddCssCDN () {
-        setting.cssCDN = [...setting.cssCDN, { address: '' }]
+        const value = state.cssCDN.value
+        value.push({
+          address: ''
+        })
+        store.commit('setting/updateCssCDN', value)
       },
       handleRemoveJsCDN (index) {
-        if (setting.jsCDN.length > 1) {
-          setting.jsCDN.splice(index, 1)
+        const value = state.jsCDN.value
+        if (value.length > 1) {
+          value.splice(index, 1)
         }
+        store.commit('setting/updateJsCDN', value)
       },
       handleAddJsCDN () {
-        setting.jsCDN = [...setting.jsCDN, { address: '' }]
+        const value = state.jsCDN.value
+        value.push({
+          address: ''
+        })
+        store.commit('setting/updateJsCDN', value)
       }
     }
-
-    watch(setting, (val) => {
-      store.commit('updateSetting', val)
-    })
 
     return {
       ...state,
@@ -129,7 +153,7 @@ export default {
       dialog
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

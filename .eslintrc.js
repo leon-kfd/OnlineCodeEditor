@@ -14,16 +14,20 @@ module.exports = {
   rules: {
     'no-console': 'off',
     'no-debugger': 'off',
-    'vue/max-attributes-per-line': [
-      2,
-      {
-        'singleline': 5,
-        'multiline': {
-          'max': 1,
-          'allowFirstLine': false
-        }
-      }
-    ],
-    'no-eval': 'off'
+    // 'vue/max-attributes-per-line': [
+    //   2,
+    //   {
+    //     'singleline': 5,
+    //     'multiline': {
+    //       'max': 1,
+    //       'allowFirstLine': false
+    //     }
+    //   }
+    // ],
+    'vue/max-attributes-per-line': 'off',
+    'no-eval': 'off',
+    'semi': 'off',
+    'space-before-function-paren': 'off',
+    "comma-dangle": "off"
   }
 }
