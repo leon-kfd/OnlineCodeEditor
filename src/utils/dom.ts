@@ -15,3 +15,9 @@ export function getHeight (el) {
     return 0
   }
 }
+
+export function setAttribute (el: HTMLElement, attrs: {[key: string]: string}) {
+  Object.keys(attrs).map(key => {
+    el.setAttribute(key, attrs[key])
+  })
+}

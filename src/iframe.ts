@@ -1,21 +1,4 @@
-type IAttrs = {
-  [key: string]: string;
-}
-
-function setAttribute (el: HTMLElement, attrs: IAttrs) {
-  Object.keys(attrs).map(key => {
-    el.setAttribute(key, attrs[key])
-  })
-}
-
-function loadScript (code) {
-  const _script = document.querySelector('#customJS')
-  if (_script) document.body.removeChild(_script)
-  const script = document.createElement('script')
-  script.id = 'customJS'
-  script.innerHTML = code
-  document.body.appendChild(script)
-}
+import { setAttribute } from '@/utils/dom'
 
 function loadCDNCSS (url: string) {
   const _link = document.createElement('link')
@@ -37,17 +20,7 @@ function loadCDNJS (url: string) {
   document.querySelector('body')?.appendChild(_script)
 }
 
-function clearCDN () {
-  const els = document.querySelectorAll('[_type="cdn"]')
-  els.forEach(el => {
-    el.parentNode?.removeChild(el)
-  })
-}
-
 function appendHeadStuff (headStuff: string) {
-  document.querySelectorAll('[_type="headstuff"]').forEach(el => {
-    el.parentNode?.removeChild(el)
-  })
   const reg = /<[^/].*?>/g
   const result = headStuff.replace(reg, function(val) {
     return val.replace('>', ' _type="headstuff">')
@@ -58,6 +31,59 @@ function appendHeadStuff (headStuff: string) {
   }
 }
 
+function cleanHeadStuff () {
+  document.querySelectorAll('[_type="headstuff"]').forEach(el => {
+    el.parentNode?.removeChild(el)
+  })
+}
+
+function appendCDN (cssCDN, jsCDN) {
+  const reg = /^(?:(http|https|ftp):\/\/)?((?:[\w-]+\.)+[a-z0-9]+)((?:\/[^/?#]*)+)?(\?[^#]+)?(#.+)?$/i;
+  cssCDN.filter(item => item.address).map(item => {
+    if (reg.test(item.address)) loadCDNCSS(item.address)
+  })
+  jsCDN.filter(item => item.address).map(item => {
+    if (reg.test(item.address)) loadCDNJS(item.address)
+  })
+}
+
+function cleanCDN () {
+  document.querySelectorAll('[_type="cdn"]').forEach(el => {
+    el.parentNode?.removeChild(el)
+  })
+}
+
+function resetSetting (setting) {
+  const { cssCDN, jsCDN, headStuff } = setting
+  cleanHeadStuff()
+  cleanCDN()
+  appendHeadStuff(headStuff)
+  appendCDN(cssCDN, jsCDN)
+}
+
+function loadPage (htmlCode, cssCode, jsCode) {
+  const _html = document.querySelector('#customHTML')
+  if (_html) document.body.removeChild(_html)
+  const html = document.createElement('div')
+  html.id = 'customHTML'
+  html.innerHTML = htmlCode
+  document.body.appendChild(html)
+
+  const _css = document.querySelector('#customCSS')
+  if (_css) document.head.removeChild(_css)
+  const css = document.createElement('style')
+  css.id = 'customCSS'
+  css.innerHTML = cssCode
+  document.head.appendChild(css)
+
+  const _script = document.querySelector('#customJS')
+  if (_script) document.body.removeChild(_script)
+  const script = document.createElement('script')
+  script.id = 'customJS'
+  script.innerHTML = jsCode
+  document.body.appendChild(script)
+}
+
 window.addEventListener('message', (event) => {
   const { data } = event
   try {
@@ -66,25 +92,8 @@ window.addEventListener('message', (event) => {
     const { html, css, javascript, updateSettingFlag, setting } = codeValue
 
     if (type !== 'editorChange') return
-
-    if (updateSettingFlag) {
-      const { cssCDN, jsCDN, headStuff } = setting
-      appendHeadStuff(headStuff)
-      const reg = /^(?:(http|https|ftp):\/\/)?((?:[\w-]+\.)+[a-z0-9]+)((?:\/[^/?#]*)+)?(\?[^#]+)?(#.+)?$/i;
-      clearCDN()
-      cssCDN.filter(item => item.address).map(item => {
-        if (reg.test(item.address)) loadCDNCSS(item.address)
-      })
-      jsCDN.filter(item => item.address).map(item => {
-        if (reg.test(item.address)) loadCDNJS(item.address)
-      })
-    }
-
-    const customCSS = document.querySelector('#customCSS')
-    if (customCSS) customCSS.innerHTML = css.code
-    const customHTML = document.querySelector('#customHTML')
-    if (customHTML) customHTML.innerHTML = html.code
-    loadScript(javascript.code)
+    if (updateSettingFlag) resetSetting(setting)
+    loadPage(html.code, css.code, javascript.code)
   } catch (e) {
     console.log(e)
   }

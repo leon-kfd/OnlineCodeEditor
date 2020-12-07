@@ -1,5 +1,4 @@
 /* eslint-disable */
-
 export async function scss2css (scss) {
   try {
     const res = await fetch('https://api.sassmeister.com/compile', {
@@ -24,7 +23,6 @@ export async function scss2css (scss) {
     return Promise.reject(e)
   }
 }
-
 
 export function debounce (fn, delay = 1000) {
   let timer
