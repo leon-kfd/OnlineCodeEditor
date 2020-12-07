@@ -1,5 +1,5 @@
 <template>
-  <AnimationDialog ref="dialog" :animationMode="true" customClass="setting-dialog" width="800px" height="600px">
+  <AnimationDialog ref="dialog" :animationMode="true" customClass="setting-dialog" width="800px" height="600px" @beforeClose="handleClose">
     <div class="wrapper">
       <h3 class="title">Setting</h3>
       <div class="content">
@@ -82,7 +82,7 @@ export default defineComponent({
   components: {
     AnimationDialog
   },
-  setup () {
+  setup (props, { emit }) {
     const store = useStore()
     const setting: SettingType = store.state.setting
     const dialog = ref()
@@ -143,6 +143,9 @@ export default defineComponent({
           address: ''
         })
         store.commit('setting/updateJsCDN', value)
+      },
+      handleClose () {
+        emit('close')
       }
     }
 

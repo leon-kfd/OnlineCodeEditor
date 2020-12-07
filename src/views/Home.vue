@@ -38,13 +38,14 @@
         <iframe id="iframe" src="./iframe.html" frameborder="0" width="100%" height="100%"></iframe>
       </div>
     </main>
-    <Footer @click="updateA"></Footer>
-    <Setting ref="settingEl"></Setting>
+    <Footer></Footer>
+    <Setting ref="settingEl" @close="handleSettingClose"></Setting>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, toRaw, ref, reactive } from 'vue'
+import { useStore } from 'vuex'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import Editor from '@/components/Editor.vue'
@@ -64,6 +65,7 @@ export default defineComponent({
     const cssCM = ref()
     const javascriptCM = ref()
     const settingEl = ref()
+    const store = useStore()
 
     const state = {
       html: reactive({
@@ -100,16 +102,19 @@ export default defineComponent({
     }
 
     const methods = {
-      async sendMessage () {
+      async sendMessage (updateSettingFlag = false) {
         const iframe = document.querySelector('#iframe') as HTMLIFrameElement
         const target = iframe.contentWindow
         const { html, css, javascript } = state
+        const setting = toRaw(store.state.setting)
         const data = {
           type: 'editorChange',
           data: {
             html: toRaw(html),
             css: toRaw(css),
-            javascript: toRaw(javascript)
+            javascript: toRaw(javascript),
+            updateSettingFlag,
+            setting
           }
         }
         if (target) {
@@ -182,6 +187,9 @@ export default defineComponent({
       },
       async handleOpenSetting () {
         settingEl.value.open()
+      },
+      handleSettingClose () {
+        methods.sendMessage(true)
       }
     }
 

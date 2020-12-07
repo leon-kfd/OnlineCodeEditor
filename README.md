@@ -15,5 +15,7 @@ This is a pratice project.
 
 ✅ HTML/CSS <a href="https://docs.emmet.io/" target="_blank">`Emmet`</a>
 
+✅ Add CDN.
+
 ...
 

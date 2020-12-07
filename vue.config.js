@@ -1,7 +1,7 @@
 const isProduction = process.env.NODE_ENV === 'production'
 const assetsCDN = {
   externals: {
-    codemirror: 'CodeMirror'
+    // codemirror: 'CodeMirror'
   },
   css: [
     'https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.1/codemirror.min.css',
@@ -9,8 +9,8 @@ const assetsCDN = {
   ],
   js: [
     'https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.1/codemirror.min.js',
-    'https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.1/mode/javascript/javascript.min.js',
     'https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.1/mode/htmlmixed/htmlmixed.min.js',
+    'https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.1/mode/javascript/javascript.min.js',
     'https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.1/mode/css/css.min.js',
     'https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.1/mode/sass/sass.min.js'
   ]
@@ -21,7 +21,8 @@ module.exports = {
     iframe: 'src/iframe.ts'
   },
   configureWebpack: {
-    externals: isProduction ? assetsCDN.externals : {}
+    // externals: isProduction ? assetsCDN.externals : {}
+    externals: assetsCDN.externals
   },
   chainWebpack: config => {
     if (isProduction) {

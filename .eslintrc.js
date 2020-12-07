@@ -28,6 +28,7 @@ module.exports = {
     'no-eval': 'off',
     'semi': 'off',
     'space-before-function-paren': 'off',
-    "comma-dangle": "off"
+    "comma-dangle": "off",
+    "no-unused-expressions": "off"
   }
 }
