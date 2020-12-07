@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <Header @open-setting="handleOpenSetting"></Header>
+    <Header @open-setting="handleOpenSetting" @refresh="handleRefresh"></Header>
     <main>
       <div class="code-wrapper" v-resize:right="codeWrapperResizeOption" @resize="handleCodeWrapperResize" v-size-observer="sizeObserverOption" @sizechange="handleCodeWrapperSizeChange">
         <div class="editor-item html-wrapper" :class="{fold: foldArr[0]}">
@@ -35,7 +35,7 @@
         </div>
       </div>
       <div class="iframe-wrapper">
-        <iframe id="iframe" src="./iframe.html" frameborder="0" width="100%" height="100%"></iframe>
+        <iframe id="iframe" :src="iframeURL" frameborder="0" width="100%" height="100%"></iframe>
       </div>
     </main>
     <Footer></Footer>
@@ -98,11 +98,20 @@ export default defineComponent({
         wait: 200
       },
       foldArr: reactive([false, false, false]),
-      codeWrapperHeight: 0
+      codeWrapperHeight: 0,
+      iframeURL: ref('./iframe.html')
     }
 
     const methods = {
-      async sendMessage (updateSettingFlag = false) {
+      async sendMessage (refresh = false) {
+        if (refresh) {
+          state.iframeURL.value = `./iframe.html?t=${+new Date()}`
+          await new Promise((resolve) => {
+            setTimeout(() => {
+              resolve(1)
+            }, 2000)
+          })
+        }
         const iframe = document.querySelector('#iframe') as HTMLIFrameElement
         const target = iframe.contentWindow
         const { html, css, javascript } = state
@@ -113,7 +122,6 @@ export default defineComponent({
             html: toRaw(html),
             css: toRaw(css),
             javascript: toRaw(javascript),
-            updateSettingFlag,
             setting
           }
         }
@@ -189,6 +197,9 @@ export default defineComponent({
         settingEl.value.open()
       },
       handleSettingClose () {
+        methods.sendMessage(true)
+      },
+      handleRefresh () {
         methods.sendMessage(true)
       }
     }
