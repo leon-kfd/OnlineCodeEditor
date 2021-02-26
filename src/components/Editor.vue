@@ -67,9 +67,9 @@ export default {
       type: Object as PropType<CodeMirror.EditorConfiguration>,
       default: () => {
         return {
-          tabSize: 2,
           lineNumbers: true,
-          line: true
+          line: true,
+          indentUnit: 2
         }
       }
     }
@@ -103,6 +103,7 @@ export default {
         cmInstance.setOption('extraKeys', {
           Tab: function (coder) {
             const indent = coder.getOption('indentUnit') || 2
+            console.log('indent', indent)
             const spaces = Array(indent + 1).join(' ')
             if (!word) {
               coder.replaceSelection(spaces)
@@ -196,7 +197,8 @@ $bgColor: #212121;
 <style>
 .textarea-wrapper .CodeMirror {
   height: 100%;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 14px;
+  font-family: Monaco, MonoSpace;
+  font-size: 15px;
+  line-height: 1.4;
 }
 </style>

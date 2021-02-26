@@ -1,21 +1,37 @@
 import { setAttribute } from '@/utils/dom'
 
 function loadCDNCSS (url: string) {
-  const _link = document.createElement('link')
-  setAttribute(_link, {
-    ref: 'stylesheet',
-    href: url
+  return new Promise((resolve, reject) => {
+    const _link = document.createElement('link')
+    setAttribute(_link, {
+      ref: 'stylesheet',
+      href: url
+    })
+    document.querySelector('head')?.appendChild(_link)
+    _link.onload = () => {
+      resolve(1)
+    }
+    _link.onerror = (e) => {
+      reject(e)
+    }
   })
-  document.querySelector('head')?.appendChild(_link)
 }
 
 function loadCDNJS (url: string) {
-  const _script = document.createElement('script')
-  setAttribute(_script, {
-    type: 'text/javascript',
-    src: url
+  return new Promise((resolve, reject) => {
+    const _script = document.createElement('script')
+    setAttribute(_script, {
+      type: 'text/javascript',
+      src: url
+    })
+    document.querySelector('body')?.appendChild(_script)
+    _script.onload = () => {
+      resolve(1)
+    }
+    _script.onerror = (e) => {
+      reject(e)
+    }
   })
-  document.querySelector('body')?.appendChild(_script)
 }
 
 function appendSetting (headStuff: string, cssCDN, jsCDN) {
@@ -24,12 +40,14 @@ function appendSetting (headStuff: string, cssCDN, jsCDN) {
     (document.querySelector('head') as HTMLHeadElement).innerHTML = headHtml + headStuff
   }
   const reg = /^(?:(http|https|ftp):\/\/)?((?:[\w-]+\.)+[a-z0-9]+)((?:\/[^/?#]*)+)?(\?[^#]+)?(#.+)?$/i;
+  const p: any[] = []
   cssCDN.filter(item => item.address).map(item => {
-    if (reg.test(item.address)) loadCDNCSS(item.address)
+    if (reg.test(item.address)) p.push(loadCDNCSS(item.address));
   })
   jsCDN.filter(item => item.address).map(item => {
-    if (reg.test(item.address)) loadCDNJS(item.address)
+    if (reg.test(item.address)) p.push(loadCDNJS(item.address));
   })
+  return Promise.all(p)
 }
 
 function loadPage (htmlCode, cssCode, jsCode) {
@@ -57,7 +75,6 @@ function loadPage (htmlCode, cssCode, jsCode) {
 
 let settingFlag = true
 window.addEventListener('message', (event) => {
-  console.log(event)
   const { data } = event
   try {
     const { type, data: codeValue } = data
@@ -67,10 +84,13 @@ window.addEventListener('message', (event) => {
     if (type !== 'editorChange') return
     if (settingFlag) {
       const { headStuff, cssCDN, jsCDN } = setting
-      appendSetting(headStuff, cssCDN, jsCDN)
+      appendSetting(headStuff, cssCDN, jsCDN).finally(() => {
+        loadPage(html.code, css.code, javascript.code)
+      })
       settingFlag = false
+    } else {
+      loadPage(html.code, css.code, javascript.code)
     }
-    loadPage(html.code, css.code, javascript.code)
   } catch (e) {
     console.log(e)
   }
