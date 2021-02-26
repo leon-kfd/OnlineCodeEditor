@@ -19,11 +19,12 @@ import { onMounted, ref, PropType, watch } from 'vue'
 import expand from 'emmet'
 import { debounce } from '@/utils/helper'
 import CodeMirror from 'codemirror'
-require('codemirror/mode/javascript/javascript.js')
-require('codemirror/mode/htmlmixed/htmlmixed.js')
-require('codemirror/mode/css/css.js')
-require('codemirror/mode/sass/sass.js')
-export type modeType = 'javascript' | 'htmlmixed' | 'css'
+import 'codemirror/mode/javascript/javascript.js'
+import 'codemirror/mode/htmlmixed/htmlmixed.js'
+import 'codemirror/mode/css/css.js'
+import 'codemirror/mode/sass/sass.js'
+
+type modeType = 'javascript' | 'htmlmixed' | 'css'
 
 function getWord (line: string, ch: number): [string, number] {
   const getNearTagChar = (str: string): string => {
