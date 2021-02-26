@@ -103,7 +103,6 @@ export default {
         cmInstance.setOption('extraKeys', {
           Tab: function (coder) {
             const indent = coder.getOption('indentUnit') || 2
-            console.log('indent', indent)
             const spaces = Array(indent + 1).join(' ')
             if (!word) {
               coder.replaceSelection(spaces)

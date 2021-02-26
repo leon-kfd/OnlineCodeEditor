@@ -40,7 +40,7 @@ function appendSetting (headStuff: string, cssCDN, jsCDN) {
     (document.querySelector('head') as HTMLHeadElement).innerHTML = headHtml + headStuff
   }
   const reg = /^(?:(http|https|ftp):\/\/)?((?:[\w-]+\.)+[a-z0-9]+)((?:\/[^/?#]*)+)?(\?[^#]+)?(#.+)?$/i;
-  const p: any[] = []
+  const p: Promise<unknown>[] = []
   cssCDN.filter(item => item.address).map(item => {
     if (reg.test(item.address)) p.push(loadCDNCSS(item.address));
   })
