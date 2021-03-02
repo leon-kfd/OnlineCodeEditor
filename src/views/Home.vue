@@ -3,36 +3,7 @@
     <Header @open-setting="handleOpenSetting" @refresh="handleRefresh"></Header>
     <main>
       <div class="code-wrapper" v-resize:right="codeWrapperResizeOption" @resize="handleCodeWrapperResize" v-size-observer="sizeObserverOption" @sizechange="handleCodeWrapperSizeChange">
-        <div class="editor-item html-wrapper" :class="{fold: foldArr[0]}">
-          <Editor
-            v-model:editorValue="html.code"
-            :mode="html.mode"
-            :title="html.title"
-            :isFold="foldArr[0]"
-            ref="htmlCM"
-            @fold="handleFold(0, $event)"
-            @debounce-update="sendMessage"></Editor>
-        </div>
-        <div class="editor-item resize-item css-wrapper" :class="{fold: foldArr[1]}" v-resize="resizeOption" @resize="handleCSSWrapperResize">
-          <Editor
-            v-model:editorValue="css.code"
-            :mode="css.mode"
-            :title="css.title"
-            :isFold="foldArr[1]"
-            ref="cssCM"
-            @fold="handleFold(1, $event)"
-            @debounce-update="sendMessage"></Editor>
-        </div>
-        <div class="editor-item javascript-wrapper" :class="{fold: foldArr[2]}">
-          <Editor
-            v-model:editorValue="javascript.code"
-            :mode="javascript.mode"
-            :title="javascript.title"
-            :isFold="foldArr[2]"
-            ref="javascriptCM"
-            @fold="handleFold(2, $event)"
-            @debounce-update="sendMessage"></Editor>
-        </div>
+        <Code ref="codeWrapper" :codeWrapperHeight="codeWrapperHeight" :list="codeList" @send-message="sendMessage"></Code>
       </div>
       <div class="iframe-wrapper">
         <iframe id="iframe" :src="iframeURL" frameborder="0" width="100%" height="100%"></iframe>
@@ -44,61 +15,53 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRaw, ref, reactive } from 'vue'
+import { defineComponent, toRaw, ref } from 'vue'
 import { useStore } from 'vuex'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
-import Editor from '@/components/Editor.vue'
+import Code from '@/components/Code.vue'
 import Setting from '@/components/Setting.vue'
-import { setWidth, setHeight, getHeight } from '@/utils/dom'
-// import { scss2css } from '@/utils/helper'
+import { setWidth } from '@/utils/dom'
 export default defineComponent({
   name: 'Home',
   components: {
     Header,
     Footer,
-    Editor,
-    Setting
+    Setting,
+    Code
   },
   setup () {
-    const htmlCM = ref()
-    const cssCM = ref()
-    const javascriptCM = ref()
     const settingEl = ref()
+    const codeWrapper = ref()
     const store = useStore()
 
     const state = {
-      html: reactive({
-        title: 'HTML',
-        mode: 'htmlmixed',
-        code: ''
-      }),
-      css: reactive({
-        title: 'CSS',
-        mode: 'css',
-        code: ''
-      }),
-      javascript: reactive({
-        title: 'Javascript',
-        mode: 'javascript',
-        code: ''
-      }),
+      codeList: ref([
+        {
+          title: 'HTML',
+          mode: 'htmlmixed',
+          code: ''
+        },
+        {
+          title: 'CSS',
+          mode: 'css',
+          code: ''
+        },
+        {
+          title: 'Javascript',
+          mode: 'javascript',
+          code: ''
+        }
+      ]),
       codeWrapperResizeOption: {
         lineWidth: 4,
         lineColor: '#b99944',
         immediate: true
       },
-      resizeOption: {
-        direction: ['top', 'bottom'],
-        lineColor: '#fff',
-        tipLineColor: '#fff',
-        needParentNodeOffset: false
-      },
       sizeObserverOption: {
         wait: 200
       },
-      foldArr: reactive([false, false, false]),
-      codeWrapperHeight: 0,
+      codeWrapperHeight: ref(0),
       iframeURL: ref('./iframe.html')
     }
 
@@ -114,7 +77,7 @@ export default defineComponent({
         }
         const iframe = document.querySelector('#iframe') as HTMLIFrameElement
         const target = iframe.contentWindow
-        const { html, css, javascript } = state
+        const [html, css, javascript] = state.codeList.value
         const setting = toRaw(store.state.setting)
         const data = {
           type: 'editorChange',
@@ -132,7 +95,7 @@ export default defineComponent({
       handleCodeWrapperSizeChange (e) {
         const { contentRect } = e
         const { height } = contentRect
-        state.codeWrapperHeight = height
+        state.codeWrapperHeight.value = height
         this.cmRefresh()
       },
       handleCodeWrapperResize (e) {
@@ -140,58 +103,8 @@ export default defineComponent({
         setWidth(target, `${resizeWidthPercent}%`)
         setWidth('.iframe-wrapper', `${100 - moveOffsetPercent}%`)
       },
-      handleCSSWrapperResize (e) {
-        const { target, direction, resizeHeightPercent, moveOffsetPercent } = e
-        if (direction === 'top') {
-          setHeight(target, `${resizeHeightPercent}%`)
-          setHeight('.html-wrapper', `${moveOffsetPercent}%`)
-        } else if (direction === 'bottom') {
-          setHeight(target, `${resizeHeightPercent}%`)
-          setHeight('.javascript-wrapper', `${100 - moveOffsetPercent}%`)
-        }
-        this.checkFolding()
-        this.cmRefresh()
-      },
-      handleFold (index, fold) {
-        const classArr = ['.html-wrapper', '.css-wrapper', '.javascript-wrapper']
-        const isFoldLength = state.foldArr.filter(item => item).length
-        const minHeightPercent = 32 / state.codeWrapperHeight * 100
-        if (fold) {
-          if (isFoldLength >= 2) return
-          let nextIndex
-          if (isFoldLength === 0) {
-            nextIndex = index < 2 ? index + 1 : 1
-          } else if (isFoldLength === 1) {
-            const foldIndex = state.foldArr.findIndex(item => item)
-            nextIndex = [0, 1, 2].filter(i => i !== index).filter(i => i !== foldIndex)[0]
-          }
-          const offsetHeightPercent = getHeight(classArr[index]) / state.codeWrapperHeight * 100
-          const nextIndexHeightPercent = getHeight(classArr[nextIndex]) / state.codeWrapperHeight * 100
-          setHeight(classArr[index], `${minHeightPercent}%`)
-          setHeight(classArr[nextIndex], `${nextIndexHeightPercent + offsetHeightPercent - minHeightPercent}%`)
-          state.foldArr[index] = fold
-        } else {
-          if (isFoldLength === 1) {
-            classArr.map(i => setHeight(i, '33.3%'))
-          } else if (isFoldLength === 2) {
-            const unFoldIndex = state.foldArr.findIndex(item => !item)
-            const halfHeightPercent = (100 - minHeightPercent) / 2
-            setHeight(classArr[index], `${halfHeightPercent}%`)
-            setHeight(classArr[unFoldIndex], `${halfHeightPercent}%`)
-          }
-          state.foldArr[index] = fold
-        }
-      },
-      checkFolding () {
-        const classArr = ['.html-wrapper', '.css-wrapper', '.javascript-wrapper']
-        classArr.map((item, index) => {
-          state.foldArr[index] = getHeight(item) < 29
-        })
-      },
       cmRefresh () {
-        htmlCM.value.handleCodeMirrorRefresh()
-        cssCM.value.handleCodeMirrorRefresh()
-        javascriptCM.value.handleCodeMirrorRefresh()
+        codeWrapper.value.refresh()
       },
       async handleOpenSetting () {
         settingEl.value.open()
@@ -207,10 +120,8 @@ export default defineComponent({
     return {
       ...state,
       ...methods,
-      htmlCM,
-      cssCM,
-      javascriptCM,
-      settingEl
+      settingEl,
+      codeWrapper
     }
   }
 })
@@ -234,18 +145,6 @@ export default defineComponent({
       height: 100%;
       display: flex;
       flex-direction: column;
-      .editor-item {
-        width: 100%;
-        height: 33.3%;
-        min-height: 32px;
-        &.fold {
-          height: 36px;
-        }
-        &.resize-item {
-          border-top: 2px solid #f9f9fa;
-          border-bottom: 2px solid #f9f9fa;
-        }
-      }
     }
     .iframe-wrapper {
       width: 60%;
