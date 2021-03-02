@@ -18,7 +18,7 @@
         <Editor
           v-model:editorValue="item.code"
           :mode="item.mode"
-          ref="codeMirror"
+          :ref="(el) => { codeMirror[index] = el }"
           @debounce-update="sendMessage"></Editor>
       </div>
     </div>
@@ -46,7 +46,7 @@ export default defineComponent({
   },
   emits: ['send-message'],
   setup(props, { emit }) {
-    const codeMirror = ref()
+    const codeMirror = ref([])
     const foldArr = ref([false, false, false])
     const classArr = ['.editor-item-1', '.editor-item-2', '.editor-item-3']
     const handleToggleFold = (index: number) => {
@@ -80,8 +80,7 @@ export default defineComponent({
       }
     }
     const refresh = () => {
-      console.log(1, codeMirror)
-      // codeMirror.value.handleCodeMirrorRefresh()
+      codeMirror.value.map((item: any) => item.handleCodeMirrorRefresh())
     }
     const checkFolding = () => {
       classArr.map((item, index) => {
@@ -119,7 +118,8 @@ export default defineComponent({
         },
         { direction: [] },
       ],
-      sendMessage
+      sendMessage,
+      codeMirror
     }
   }
 })
