@@ -73,7 +73,8 @@
 </template>
 
 <script lang="ts">
-import AnimationDialog from 'howdyjs/packages/animation-dialog'
+import AnimationDialog from '@howdyjs/animation-dialog'
+import 'animate.css'
 import { computed, defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import { SettingType } from './Setting'
