@@ -5,8 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "serve:hash": "cross-env ROUTER_MODE=hash vue-cli-service serve",
-    "build:hash": "cross-env ROUTER_MODE=hash vue-cli-service build",
+    "serve:hash": "cross-env VUE_APP_ROUTER_MODE=hash vue-cli-service serve",
+    "build:hash": "cross-env VUE_APP_ROUTER_MODE=hash vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

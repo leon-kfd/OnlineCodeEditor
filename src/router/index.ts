@@ -10,7 +10,7 @@ const routes: Array<RouteRecordRaw> = [
 ]
 
 const router = createRouter({
-  history: process.env.ROUTER_MODE === 'hash' ? createWebHashHistory() : createWebHistory(process.env.BASE_URL),
+  history: process.env.VUE_APP_ROUTER_MODE === 'hash' ? createWebHashHistory() : createWebHistory(process.env.BASE_URL),
   routes
 })
 

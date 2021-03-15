@@ -16,7 +16,7 @@ const assetsCDN = {
   ]
 }
 
-const isHashMode = process.env.ROUTER_MODE === 'hash'
+const isHashMode = process.env.VUE_APP_ROUTER_MODE === 'hash'
 const publicPath = isHashMode ? './' : '/coder'
 
 module.exports = {
