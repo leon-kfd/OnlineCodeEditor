@@ -19,5 +19,13 @@ This is a pratice project.
 
 ✅ Add SCSS Mode. (It's based on an online api provided by <a href="https://sassmeister.com" target="_blank">sassmeister.com</a>)
 
+
+## Todo
+
+😴 Javascript Babel Mode.
+😴 Account System for code sync.
+😴 Online Code show.
+😴 More code layout view.
+
 ...
 
