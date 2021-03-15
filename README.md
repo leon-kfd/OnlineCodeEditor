@@ -22,10 +22,10 @@ This is a pratice project.
 
 ## Todo
 
-😴 Javascript Babel Mode.
-😴 Account System for code sync.
-😴 Online Code show.
-😴 More code layout view.
+😴 Javascript Babel Mode.  
+😴 Account System for code sync.  
+😴 Online Code show.  
+😴 More code layout view.  
 
 ...
 
