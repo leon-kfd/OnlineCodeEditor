@@ -17,5 +17,7 @@ This is a pratice project.
 
 ✅ Add CDN.
 
+✅ Add SCSS Mode. (It's based on an online api provided by <a href="https://sassmeister.com" target="_blank">sassmeister.com</a>)
+
 ...
 

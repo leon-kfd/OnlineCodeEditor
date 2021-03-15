@@ -1,4 +1,17 @@
 import { setAttribute } from '@/utils/dom'
+import { scss2css } from '@/utils/helper'
+
+function setError (error: string | number) {
+  const errorWrapper = document.querySelector('#__errorWrapper__') as HTMLElement;
+  const errorText = document.querySelector('#__errorWrapper__ .content') as HTMLElement;
+  if (error === -1) {
+    errorWrapper.style.display = 'none'
+    errorText.innerText = ''
+  } else {
+    errorWrapper.style.display = 'block'
+    errorText.innerText = error as string
+  }
+}
 
 function loadCDNCSS (url: string) {
   return new Promise((resolve, reject) => {
@@ -74,14 +87,22 @@ function loadPage (htmlCode, cssCode, jsCode) {
 }
 
 let settingFlag = true
-window.addEventListener('message', (event) => {
+window.addEventListener('message', async (event) => {
   const { data } = event
   try {
     const { type, data: codeValue } = data
     if (!codeValue) return
     const { html, css, javascript, setting } = codeValue
-
     if (type !== 'editorChange') return
+    setError(-1)
+    if (css.code && css.mode === 'sass') {
+      try {
+        const { css: output } = await scss2css(css.code)
+        css.code = output
+      } catch (e) {
+        setError(e?.error?.formatted || 'scss error')
+      }
+    }
     if (settingFlag) {
       const { headStuff, cssCDN, jsCDN } = setting
       appendSetting(headStuff, cssCDN, jsCDN).finally(() => {

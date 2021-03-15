@@ -96,7 +96,7 @@ export default defineComponent({
       }),
       cssPreprocessor: computed({
         get: () => setting.cssPreprocessor,
-        set: (val) => store.commit('setting/cssPreprocessor', val)
+        set: (val) => store.commit('setting/updateCssPreprocessor', val)
       }),
       cssCDN: computed({
         get: () => setting.cssCDN,

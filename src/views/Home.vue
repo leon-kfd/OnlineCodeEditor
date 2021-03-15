@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, toRaw, ref } from 'vue'
+import { defineComponent, toRaw, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
@@ -64,6 +64,11 @@ export default defineComponent({
       codeWrapperHeight: ref(0),
       iframeURL: ref('./iframe.html')
     }
+
+    watch(() => store.state.setting.cssPreprocessor, (val: string) => {
+      state.codeList.value[1].title = val.toUpperCase()
+      state.codeList.value[1].mode = val === 'scss' ? 'sass' : 'css'
+    })
 
     const methods = {
       async sendMessage (refresh = false) {
