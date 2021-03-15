@@ -74,7 +74,6 @@
 
 <script lang="ts">
 import AnimationDialog from '@howdyjs/animation-dialog'
-import 'animate.css'
 import { computed, defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import { SettingType } from './Setting'
@@ -83,6 +82,7 @@ export default defineComponent({
   components: {
     AnimationDialog
   },
+  emits: ['close'],
   setup (props, { emit }) {
     const store = useStore()
     const setting: SettingType = store.state.setting

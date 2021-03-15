@@ -15,6 +15,10 @@ const assetsCDN = {
     // 'https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.1/mode/sass/sass.min.js'
   ]
 }
+
+const isHashMode = process.env.ROUTER_MODE === 'hash'
+const publicPath = isHashMode ? './' : '/coder'
+
 module.exports = {
   pages: {
     index: 'src/main.ts',
@@ -31,5 +35,5 @@ module.exports = {
     })
   },
   productionSourceMap: !isProduction,
-  publicPath: '/coder'
+  publicPath
 }
