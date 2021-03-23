@@ -74,7 +74,7 @@
 
 <script lang="ts">
 import AnimationDialog from '@howdyjs/animation-dialog'
-import { computed, defineComponent, ref, watch } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import { SettingType } from './Setting'
 
@@ -155,8 +155,8 @@ export default defineComponent({
       }
     }
 
-    const dialogWidth = computed(() => props.isMobileView ? '100vw' : '800px')
-    const dialogHeight = computed(() => props.isMobileView ? '100vh' : '600px')
+    const dialogWidth = computed(() => props.isMobileView ? window.innerWidth + 'px' : '800px')
+    const dialogHeight = computed(() => props.isMobileView ? window.innerHeight + 'px' : '600px')
 
     return {
       ...state,
