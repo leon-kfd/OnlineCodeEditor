@@ -34,6 +34,13 @@ module.exports = {
       return args
     })
   },
+  css: {
+    loaderOptions: {
+      scss: {
+        prependData: '@import "~@/assets/variable.scss";'
+      }
+    }
+  },
   productionSourceMap: !isProduction,
   publicPath
 }

@@ -1,6 +1,7 @@
 <template>
   <div class="editor-item"
     v-for="(item,index) in list"
+    v-show="!isMobileView || mobileTabActive === index"
     :key="item"
     :class="{ fold: foldArr[index], [`editor-item-${index + 1}`]: true }"
     v-resize="resizeOption[index]"
@@ -42,6 +43,13 @@ export default defineComponent({
     codeWrapperHeight: {
       type: Number,
       default: window.innerHeight
+    },
+    mobileTabActive: {
+      type: Number,
+      default: 0
+    },
+    isMobileView: {
+      type: Boolean
     }
   },
   emits: ['send-message'],
@@ -125,7 +133,7 @@ export default defineComponent({
 })
 </script>
 <style lang="scss" scoped>
-$bgColor: #212121;
+
 .editor-item {
   width: 100%;
   height: 33.3%;
@@ -142,7 +150,7 @@ $bgColor: #212121;
     height: 100%;
     display: flex;
     flex-direction: column;
-    background: $bgColor;
+    background: $deepDark;
     .header {
       display: flex;
       align-items: center;
@@ -175,6 +183,20 @@ $bgColor: #212121;
       height: 100%;
       flex: 1;
       overflow: hidden;
+    }
+  }
+}
+@media screen and (max-width: $mobileWidth) {
+  .editor-item {
+    position: absolute !important;
+    width: 100%;
+    height: 100% !important;
+    top: -1px;
+    left: 0;
+    .wrapper {
+      .header {
+        display: none;
+      }
     }
   }
 }

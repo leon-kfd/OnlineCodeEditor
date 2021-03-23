@@ -5,7 +5,8 @@ A online code Editor like `CodePen`, built by Vue3.
 This is a pratice project.  
 
 ## Status: ✏
-<a href="//kongfandong.cn/coder">Simple Demo</a>
+- <a href="https://leon-kfd.github.io/OnlineCodeEditor/#/">Simple Demo from Github pages</a>
+- <a href="https://kongfandong.cn/coder">Simple Demo from author server</a>
 
 ## Feature
 
@@ -18,6 +19,8 @@ This is a pratice project.
 ✅ Add CDN.
 
 ✅ Add SCSS Mode. (It's based on an online api provided by <a href="https://sassmeister.com" target="_blank">sassmeister.com</a>)
+
+✅ Mobile View. (Responsive design)
 
 
 ## Todo

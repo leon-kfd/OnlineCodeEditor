@@ -31,7 +31,7 @@ export default {
 header {
   width: 100%;
   height: 48px;
-  background: #33353b;
+  background: $dark;
   border-bottom: 1px solid #ccc;
   display: flex;
   flex-wrap: nowrap;

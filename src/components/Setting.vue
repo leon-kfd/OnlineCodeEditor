@@ -1,5 +1,5 @@
 <template>
-  <AnimationDialog ref="dialog" :animationMode="true" customClass="setting-dialog" width="800px" height="600px" @beforeClose="handleClose">
+  <AnimationDialog ref="dialog" :animationMode="true" customClass="setting-dialog" :width="dialogWidth" :height="dialogHeight" @beforeClose="handleClose">
     <div class="wrapper">
       <h3 class="title">Setting</h3>
       <div class="content">
@@ -74,7 +74,7 @@
 
 <script lang="ts">
 import AnimationDialog from '@howdyjs/animation-dialog'
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import { SettingType } from './Setting'
 
@@ -83,6 +83,11 @@ export default defineComponent({
     AnimationDialog
   },
   emits: ['close'],
+  props: {
+    isMobileView: {
+      type: Boolean
+    }
+  },
   setup (props, { emit }) {
     const store = useStore()
     const setting: SettingType = store.state.setting
@@ -150,11 +155,16 @@ export default defineComponent({
       }
     }
 
+    const dialogWidth = computed(() => props.isMobileView ? '100vw' : '800px')
+    const dialogHeight = computed(() => props.isMobileView ? '100vh' : '600px')
+
     return {
       ...state,
       ...methods,
       setting,
-      dialog
+      dialog,
+      dialogWidth,
+      dialogHeight
     }
   }
 })
@@ -266,6 +276,33 @@ export default defineComponent({
     width: 100%;
     font-weight: bold;
     font-size: 18px;
+  }
+}
+@media screen and (max-width: $mobileWidth) {
+  .content {
+    flex-direction: column;
+    .tabs-nav {
+      display: flex;
+      text-align: center;
+      width: 100%;
+      border-right: none;
+      padding: 0;
+      margin-bottom: 18px;
+      border-bottom: 1px solid $lightDark;
+      .item {
+        margin-bottom: 0;
+        margin: 0 10px;
+        position: relative;
+        &.active:after {
+          right: auto;
+          top: auto;
+          bottom: -2px;
+          width: 70%;
+          height: 3px;
+          left: 15%;
+        }
+      }
+    }
   }
 }
 </style>

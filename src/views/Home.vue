@@ -1,34 +1,38 @@
 <template>
   <div class="home">
     <Header @open-setting="handleOpenSetting" @refresh="handleRefresh"></Header>
+    <MobileTab v-if="isMobileView" :codeList="codeList" v-model:active="mobileTabActive" />
     <main>
-      <div class="code-wrapper" v-resize:right="codeWrapperResizeOption" @resize="handleCodeWrapperResize" v-size-observer="sizeObserverOption" @sizechange="handleCodeWrapperSizeChange">
-        <Code ref="codeWrapper" :codeWrapperHeight="codeWrapperHeight" :list="codeList" @send-message="sendMessage"></Code>
+      <div class="code-wrapper" v-if="refreshCodeWrapper && mobileTabActive !== 3" v-resize="codeWrapperResizeOption" @resize="handleCodeWrapperResize" v-size-observer="sizeObserverOption" @sizechange="handleCodeWrapperSizeChange">
+        <Code ref="codeWrapper" :isMobileView="isMobileView" :codeWrapperHeight="codeWrapperHeight" :list="codeList" :mobileTabActive="mobileTabActive" @send-message="sendMessage"></Code>
       </div>
-      <div class="iframe-wrapper">
+      <div class="iframe-wrapper =" v-show="!isMobileView || mobileTabActive === 3">
         <iframe id="iframe" :src="iframeURL" frameborder="0" width="100%" height="100%"></iframe>
       </div>
     </main>
     <Footer></Footer>
-    <Setting ref="settingEl" @close="handleSettingClose"></Setting>
+    <Setting ref="settingEl" :isMobileView="isMobileView" @close="handleSettingClose"></Setting>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, toRaw, ref, watch } from 'vue'
+import { defineComponent, toRaw, ref, watch, onMounted, onUnmounted, reactive, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import Header from '@/components/Header.vue'
 import Footer from '@/components/Footer.vue'
 import Code from '@/components/Code.vue'
 import Setting from '@/components/Setting.vue'
+import MobileTab from '@/components/MobileTab.vue'
 import { setWidth } from '@/utils/dom'
+const MOBILE_VIEW_SIZE = 500
 export default defineComponent({
   name: 'Home',
   components: {
     Header,
     Footer,
     Setting,
-    Code
+    Code,
+    MobileTab
   },
   setup () {
     const settingEl = ref()
@@ -53,11 +57,12 @@ export default defineComponent({
           code: ''
         }
       ]),
-      codeWrapperResizeOption: {
+      codeWrapperResizeOption: reactive({
+        direction: ['right'],
         lineWidth: 4,
         lineColor: '#b99944',
         immediate: true
-      },
+      }),
       sizeObserverOption: {
         wait: 200
       },
@@ -122,11 +127,42 @@ export default defineComponent({
       }
     }
 
+    const isMobileView = ref(false)
+    const refreshCodeWrapper = ref(true)
+    const mobileTabActive = ref(0)
+    const setMobileView = () => {
+      isMobileView.value = window.innerWidth < MOBILE_VIEW_SIZE
+    }
+    watch(isMobileView, async (val) => {
+      if (val) {
+        state.codeWrapperResizeOption.direction = []
+      } else {
+        state.codeWrapperResizeOption.direction = ['right']
+      }
+      refreshCodeWrapper.value = false
+      await nextTick()
+      refreshCodeWrapper.value = true
+    }, {
+      immediate: true
+    })
+
+    // mobile layout
+    onMounted(() => {
+      setMobileView()
+      window.addEventListener('resize', setMobileView)
+    })
+    onUnmounted(() => {
+      window.removeEventListener('resize', setMobileView)
+    })
+
     return {
       ...state,
       ...methods,
       settingEl,
-      codeWrapper
+      codeWrapper,
+      isMobileView,
+      refreshCodeWrapper,
+      mobileTabActive
     }
   }
 })
@@ -145,16 +181,38 @@ export default defineComponent({
     flex-wrap: nowrap;
     flex: 1;
     overflow: hidden;
+    position: relative;
     .code-wrapper {
       width: 40%;
       height: 100%;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
     .iframe-wrapper {
       width: 60%;
       height: 100%;
       position: relative;
+    }
+  }
+}
+@media screen and (max-width: $mobileWidth) {
+  .home {
+    main {
+      .code-wrapper {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      .iframe-wrapper {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
     }
   }
 }
