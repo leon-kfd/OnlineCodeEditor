@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div class="home" :style="{ height: homeHeight }">
     <Header @open-setting="handleOpenSetting" @refresh="handleRefresh"></Header>
     <MobileTab v-if="isMobileView" :codeList="codeList" v-model:active="mobileTabActive" />
     <main>
@@ -67,7 +67,8 @@ export default defineComponent({
         wait: 200
       },
       codeWrapperHeight: ref(0),
-      iframeURL: ref('./iframe.html')
+      iframeURL: ref('./iframe.html'),
+      homeHeight: ref('100vh')
     }
 
     watch(() => store.state.setting.cssPreprocessor, (val: string) => {
@@ -132,6 +133,7 @@ export default defineComponent({
     const mobileTabActive = ref(0)
     const setMobileView = () => {
       isMobileView.value = window.innerWidth < MOBILE_VIEW_SIZE
+      state.homeHeight.value = window.innerHeight + 'px'
     }
     watch(isMobileView, async (val) => {
       if (val) {
