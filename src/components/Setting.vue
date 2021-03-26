@@ -1,5 +1,13 @@
 <template>
-  <AnimationDialog ref="dialog" :animationMode="true" customClass="setting-dialog" :width="dialogWidth" :height="dialogHeight" @beforeClose="handleClose">
+  <AnimationDialog
+    ref="dialog"
+    :animationMode="true"
+    customClass="setting-dialog"
+    :width="dialogWidth"
+    :height="dialogHeight"
+    :listenWindowSizeChange="true"
+    :debounceWait="0"
+    @beforeClose="handleClose">
     <div class="wrapper">
       <h3 class="title">Setting</h3>
       <div class="content">
@@ -155,8 +163,8 @@ export default defineComponent({
       }
     }
 
-    const dialogWidth = computed(() => props.isMobileView ? window.innerWidth + 'px' : '800px')
-    const dialogHeight = computed(() => props.isMobileView ? window.innerHeight + 'px' : '600px')
+    const dialogWidth = computed(() => props.isMobileView ? window.innerWidth + 'px' : 'min(800px, 80vw)')
+    const dialogHeight = computed(() => props.isMobileView ? window.innerHeight + 'px' : 'min(600px, 80vh)')
 
     return {
       ...state,

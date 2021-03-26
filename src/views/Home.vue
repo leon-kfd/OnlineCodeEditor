@@ -144,6 +144,7 @@ export default defineComponent({
       refreshCodeWrapper.value = false
       await nextTick()
       refreshCodeWrapper.value = true
+      settingEl.value.close()
     }, {
       immediate: true
     })
