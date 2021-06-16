@@ -4,8 +4,10 @@ const assetsCDN = {
     // codemirror: 'CodeMirror'
   },
   css: [
-    'https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.1/codemirror.min.css',
-    'https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.1/theme/material-darker.min.css'
+    // 'https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.1/codemirror.min.css',
+    // 'https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.1/theme/material-darker.min.css'
+    'https://cdn.jsdelivr.net/npm/codemirror@5.61.1/lib/codemirror.css',
+    'https://cdn.jsdelivr.net/npm/codemirror@5.61.1/theme/material-darker.css'
   ],
   js: [
     // 'https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.1/codemirror.min.js',
