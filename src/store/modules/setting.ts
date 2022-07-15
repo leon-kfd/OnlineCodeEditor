@@ -9,16 +9,16 @@ export default {
     jsCDN: [{ address: '' }]
   } as SettingType,
   mutations: {
-    updateHeadStuff(state, headStuff) {
+    updateHeadStuff(state: any, headStuff: string) {
       state.headStuff = headStuff
     },
-    updateCssPreprocessor(state, cssPreprocessor) {
+    updateCssPreprocessor(state: any, cssPreprocessor: string) {
       state.cssPreprocessor = cssPreprocessor
     },
-    updateCssCDN(state, cssCDN) {
+    updateCssCDN(state: any, cssCDN: any[]) {
       state.cssCDN = cssCDN
     },
-    updateJsCDN(state, jsCDN) {
+    updateJsCDN(state: any, jsCDN: any[]) {
       state.jsCDN = jsCDN
     }
   },

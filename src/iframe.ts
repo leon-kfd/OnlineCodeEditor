@@ -1,7 +1,7 @@
 import { setAttribute } from '@/utils/dom'
 import { scss2css } from '@/utils/helper'
 
-function setError (error: string | number) {
+function setError(error: string | number) {
   const errorWrapper = document.querySelector('#__errorWrapper__') as HTMLElement;
   const errorText = document.querySelector('#__errorWrapper__ .content') as HTMLElement;
   if (error === -1) {
@@ -13,7 +13,7 @@ function setError (error: string | number) {
   }
 }
 
-function loadCDNCSS (url: string) {
+function loadCDNCSS(url: string) {
   return new Promise((resolve, reject) => {
     const _link = document.createElement('link')
     setAttribute(_link, {
@@ -30,7 +30,7 @@ function loadCDNCSS (url: string) {
   })
 }
 
-function loadCDNJS (url: string) {
+function loadCDNJS(url: string) {
   return new Promise((resolve, reject) => {
     const _script = document.createElement('script')
     setAttribute(_script, {
@@ -47,7 +47,7 @@ function loadCDNJS (url: string) {
   })
 }
 
-function appendSetting (headStuff: string, cssCDN, jsCDN) {
+function appendSetting(headStuff: string, cssCDN: any[], jsCDN: any[]) {
   const headHtml = document.querySelector('head')?.innerHTML
   if (document.querySelector('head')) {
     (document.querySelector('head') as HTMLHeadElement).innerHTML = headHtml + headStuff
@@ -63,7 +63,7 @@ function appendSetting (headStuff: string, cssCDN, jsCDN) {
   return Promise.all(p)
 }
 
-function loadPage (htmlCode, cssCode, jsCode) {
+function loadPage(htmlCode: string, cssCode: string, jsCode: string) {
   const _html = document.querySelector('#customHTML')
   if (_html) document.body.removeChild(_html)
   const html = document.createElement('div')
@@ -99,7 +99,7 @@ window.addEventListener('message', async (event) => {
       try {
         const { css: output } = await scss2css(css.code)
         css.code = output
-      } catch (e) {
+      } catch (e: any) {
         setError(e?.error?.formatted || 'scss error')
       }
     }

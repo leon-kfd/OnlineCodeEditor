@@ -1,6 +1,11 @@
 <template>
   <div class="mobile-tab">
-    <div class="mobile-tab-item" :class="{active: index === active}" v-for="(text,index) in tabList" :key="text" @click="handleClick(index)">{{text}}</div>
+    <div
+      class="mobile-tab-item"
+      :class="{active: index === active}"
+      v-for="(text,index) in tabList"
+      :key="text"
+      @click="handleClick(index)">{{text}}</div>
   </div>
 </template>
 

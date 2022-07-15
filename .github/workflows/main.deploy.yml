@@ -20,7 +20,7 @@ jobs:
         run: yarn
 
       - name: Build Demo
-        run: yarn build:hash
+        run: yarn build
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@3.7.1

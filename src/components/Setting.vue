@@ -12,20 +12,23 @@
       <h3 class="title">Setting</h3>
       <div class="content">
         <div class="tabs-nav">
-          <div class="item" :class="{active: index === activeTab}" v-for="(item,index) in tabs" :key="item" @click="handleSetTabActive(index)">{{item}}</div>
+          <div
+            class="item"
+            :class="{active: index === activeTab}"
+            v-for="(item,index) in tabs"
+            :key="item"
+            @click="handleSetTabActive(index)">{{item}}</div>
         </div>
         <div class="tabs-content">
           <div class="html-setting" v-if="activeTab === 0">
-            <!-- // Html Setting -->
             <div class="form-item">
               <div class="label">Stuff to &lt;head&gt;</div>
               <div class="form-content">
-                <textarea v-model="headStuff" cols="30" rows="6" placeholder="e.g. <meta>, <link>, <script>"></textarea>
+                <textarea v-model="headStuff" cols="30" rows="6" :placeholder="headStuffPlaceholder" />
               </div>
             </div>
           </div>
           <div class="css-setting" v-if="activeTab === 1">
-            <!-- // CSS Setting -->
             <div class="form-item">
               <div class="label">CSS Preprocessor</div>
               <div class="content">
@@ -121,7 +124,7 @@ export default defineComponent({
       })
     }
     const methods = {
-      handleSetTabActive (index) {
+      handleSetTabActive (index: number) {
         state.activeTab.value = index
       },
       open () {
@@ -130,7 +133,7 @@ export default defineComponent({
       close () {
         dialog.value.close()
       },
-      handleRemoveCssCDN (index) {
+      handleRemoveCssCDN (index: number) {
         const value = state.cssCDN.value
         if (value.length > 1) {
           value.splice(index, 1)
@@ -144,7 +147,7 @@ export default defineComponent({
         })
         store.commit('setting/updateCssCDN', value)
       },
-      handleRemoveJsCDN (index) {
+      handleRemoveJsCDN (index: number) {
         const value = state.jsCDN.value
         if (value.length > 1) {
           value.splice(index, 1)
@@ -172,7 +175,8 @@ export default defineComponent({
       setting,
       dialog,
       dialogWidth,
-      dialogHeight
+      dialogHeight,
+      headStuffPlaceholder: 'e.g. <meta>, <link>, <script>'
     }
   }
 })

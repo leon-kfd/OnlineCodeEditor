@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <link rel="icon" href="favicon.ico" />
+    <title>Demo</title>
+    <style>
+      #__errorWrapper__ {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        padding: 20px;
+        background: rgba(0, 0, 0, 0.85);
+        display: none;
+      }
+      #__errorWrapper__ .title {
+        line-height: 30px;
+        font-size: 18px;
+        color: rgb(241, 160, 160);
+      }
+      #__errorWrapper__ .content {
+        line-height: 1.5;
+        font-size: 14px;
+        color: rgb(182, 182, 182);
+      }
+    </style>
+    <style id="customCSS"></style>
+  </head>
+  <body>
+    <div id="customHTML"></div>
+    <div id="__errorWrapper__">
+      <div class="title">💣Something Wrong</div>
+      <div class="content"></div>
+    </div>
+    <script type="module" src="./src/iframe.ts"></script>
+  </body>
+</html>
