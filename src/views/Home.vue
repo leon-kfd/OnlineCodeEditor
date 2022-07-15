@@ -3,11 +3,30 @@
     <Header @open-setting="handleOpenSetting" @refresh="handleRefresh"></Header>
     <MobileTab v-if="isMobileView" :codeList="codeList" v-model:active="mobileTabActive" />
     <main>
-      <div class="code-wrapper" v-if="refreshCodeWrapper && mobileTabActive !== 3" v-resize="codeWrapperResizeOption" @resize="handleCodeWrapperResize" v-size-observer="sizeObserverOption" @sizechange="handleCodeWrapperSizeChange">
-        <Code ref="codeWrapper" :isMobileView="isMobileView" :codeWrapperHeight="codeWrapperHeight" :list="codeList" :mobileTabActive="mobileTabActive" @send-message="sendMessage"></Code>
+      <div
+        class="code-wrapper"
+        v-if="refreshCodeWrapper && mobileTabActive !== 3"
+        v-resize="codeWrapperResizeOption"
+        @resize="handleCodeWrapperResize"
+        v-size-observer="sizeObserverOption"
+        @sizechange="handleCodeWrapperSizeChange">
+        <Code
+          ref="codeWrapper"
+          :isMobileView="isMobileView"
+          :codeWrapperHeight="codeWrapperHeight"
+          :list="codeList"
+          :mobileTabActive="mobileTabActive"
+          @send-message="sendMessage">
+        </Code>
       </div>
       <div class="iframe-wrapper =" v-show="!isMobileView || mobileTabActive === 3">
-        <iframe id="iframe" :src="iframeURL" frameborder="0" width="100%" height="100%"></iframe>
+        <iframe
+          id="iframe"
+          :src="iframeURL"
+          frameborder="0"
+          width="100%"
+          height="100%">
+        </iframe>
       </div>
     </main>
     <Footer></Footer>
@@ -103,13 +122,13 @@ export default defineComponent({
           target.postMessage(data, location.origin + '/iframe.html')
         }
       },
-      handleCodeWrapperSizeChange (e) {
+      handleCodeWrapperSizeChange (e: any) {
         const { contentRect } = e
         const { height } = contentRect
         state.codeWrapperHeight.value = height
         this.cmRefresh()
       },
-      handleCodeWrapperResize (e) {
+      handleCodeWrapperResize (e: any) {
         const { target, resizeWidthPercent, moveOffsetPercent } = e
         setWidth(target, `${resizeWidthPercent}%`)
         setWidth('.iframe-wrapper', `${100 - moveOffsetPercent}%`)

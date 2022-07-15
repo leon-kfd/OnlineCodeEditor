@@ -1,6 +1,10 @@
 <template>
   <header>
-    <div class="logo-wrapper"></div>
+    <div class="logo-wrapper">
+      <div class="temp-title">
+        🚀 Code Editor
+      </div>
+    </div>
     <div class="operation-wrapper">
       <button class="btn btn-refresh" @click="handleRefresh" title="Force Refresh">
         <svg viewBox="0 0 1024 1024" width="20" height="20">
@@ -35,9 +39,16 @@ header {
   border-bottom: 1px solid #ccc;
   display: flex;
   flex-wrap: nowrap;
+  align-items: center;
   .logo-wrapper {
     width: 100%;
     flex: 1;
+    .temp-title {
+      padding-left: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #ccc;
+    }
   }
   .operation-wrapper {
     display: flex;

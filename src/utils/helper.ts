@@ -1,5 +1,5 @@
 /* eslint-disable */
-export async function scss2css (scss) {
+export async function scss2css(scss: string) {
   try {
     const res = await fetch('https://api.sassmeister.com/compile', {
       method: 'POST',
@@ -24,9 +24,9 @@ export async function scss2css (scss) {
   }
 }
 
-export function debounce (fn, delay = 1000) {
-  let timer
-  return function (this:any) {
+export function debounce(fn: any, delay = 1000) {
+  let timer: number
+  return function (this: any) {
     const context = this
     const args = arguments
     clearTimeout(timer)

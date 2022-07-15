@@ -1,5 +1,6 @@
 <template>
-  <div class="editor-item"
+  <div
+    class="editor-item"
     v-for="(item,index) in list"
     v-show="!isMobileView || mobileTabActive === index"
     :key="item"
@@ -10,7 +11,12 @@
       <div class="header">
         <div class="title">{{item.title}}</div>
         <i class="fold" :class="{ active: foldArr[index] }" @click="handleToggleFold(index)">
-          <svg class="icon" viewBox="0 0 1024 1024" width="1em" height="1em" fill="currentColor">
+          <svg
+            class="icon"
+            viewBox="0 0 1024 1024"
+            width="1em"
+            height="1em"
+            fill="currentColor">
             <path d="M510.464 644.608l278.848-278.848 39.68 39.552L530.176 704h-39.552L192 405.312l39.616-39.552 278.848 278.848z"></path>
           </svg>
         </i>
@@ -63,12 +69,14 @@ export default defineComponent({
       const minHeightPercent = 32 / props.codeWrapperHeight * 100
       if (fold) {
         if (isFoldLength >= 2) return
-        let nextIndex
+        let nextIndex: number
         if (isFoldLength === 0) {
           nextIndex = index < 2 ? index + 1 : 1
         } else if (isFoldLength === 1) {
           const foldIndex = foldArr.value.findIndex(item => item)
           nextIndex = [0, 1, 2].filter(i => i !== index).filter(i => i !== foldIndex)[0]
+        } else {
+          nextIndex = 0
         }
         const offsetHeightPercent = getHeight(classArr[index]) / props.codeWrapperHeight * 100
         const nextIndexHeightPercent = getHeight(classArr[nextIndex]) / props.codeWrapperHeight * 100
@@ -95,7 +103,7 @@ export default defineComponent({
         foldArr.value[index] = getHeight(item) < 29
       })
     }
-    const handleCSSWrapperResize = (e) => {
+    const handleCSSWrapperResize = (e: any) => {
       const { target, direction, resizeHeightPercent, moveOffsetPercent } = e
       if (direction === 'top') {
         setHeight(target, `${resizeHeightPercent}%`)
