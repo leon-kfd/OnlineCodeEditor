@@ -44,6 +44,8 @@ import Setting from '@/components/Setting.vue'
 import MobileTab from '@/components/MobileTab.vue'
 import { setWidth } from '@/utils/dom'
 const MOBILE_VIEW_SIZE = 500
+const PREFIX = './'
+// const PREFIX = '/coder/'
 export default defineComponent({
   name: 'Home',
   components: {
@@ -86,7 +88,7 @@ export default defineComponent({
         wait: 200
       },
       codeWrapperHeight: ref(0),
-      iframeURL: ref('./iframe.html'),
+      iframeURL: ref(`${PREFIX}/iframe.html`),
       homeHeight: ref('100vh')
     }
 
@@ -98,7 +100,7 @@ export default defineComponent({
     const methods = {
       async sendMessage (refresh = false) {
         if (refresh) {
-          state.iframeURL.value = `./iframe.html?t=${+new Date()}`
+          state.iframeURL.value = `${PREFIX}/iframe.html?t=${+new Date()}`
           await new Promise((resolve) => {
             setTimeout(() => {
               resolve(1)
@@ -119,7 +121,7 @@ export default defineComponent({
           }
         }
         if (target) {
-          target.postMessage(data, location.origin + '/iframe.html')
+          target.postMessage(data, location.origin + `${PREFIX}/iframe.html`)
         }
       },
       handleCodeWrapperSizeChange (e: any) {
