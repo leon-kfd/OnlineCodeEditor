@@ -5,8 +5,8 @@ An online code Editor like `CodePen`, built by Vue3.
 This is a pratice project.  
 
 ## Status: ✏
-- <a href="https://leon-kfd.github.io/OnlineCodeEditor/#/">Simple Demo from Github pages</a>
-- <a href="https://kongfandong.cn/coder">Simple Demo from author server</a>
+- <a href="https://leon-kfd.github.io/OnlineCodeEditor/#/">Simple Demo1</a>
+- <a href="https://code.howdz.xyz">Simple Demo2</a>
 
 ## Feature
 
