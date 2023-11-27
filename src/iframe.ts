@@ -82,7 +82,9 @@ function loadPage(htmlCode: string, cssCode: string, jsCode: string) {
   if (_script) document.body.removeChild(_script)
   const script = document.createElement('script')
   script.id = 'customJS'
-  script.innerHTML = jsCode
+  script.innerHTML = `(function(){ 
+    ${jsCode.replace(/parent\.document/g, '__document__')}
+  })()`
   document.body.appendChild(script)
 }
 
